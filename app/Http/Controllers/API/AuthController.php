@@ -26,7 +26,11 @@ class AuthController extends Controller
             if ( !$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'status' => 'error',
-                    'error' => 'invalid.credentials',
+                    'errors' => [
+                        'password' => [
+                            'Пользователь с таким логином или паролем не найден'
+                        ]
+                    ],
                     'msg' => 'Invalid Credentials.'
                 ], 400);
             }
