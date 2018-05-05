@@ -56,9 +56,9 @@ class UserController extends Controller
                 'balance' => null,
                 'error' => $ex->getMessage(),
             ], 500);
-        } finally {
-            return response()->json([], 500);
         }
+
+        return response()->json([], 500);
     }
 
     /**
