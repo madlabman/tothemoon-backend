@@ -35,7 +35,7 @@ class UserController extends Controller
     {
         try {
             if (!empty(auth()->user()->balance)) {
-                $btc = auth()->user()->balance->body;
+                $btc = round( auth()->user()->balance->body, 3 );
                 $usd = CryptoPrice::convert($btc, 'btc', 'usd');
                 $rub = CryptoPrice::convert($btc, 'btc', 'rub');
 

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Vinelab\NeoEloquent\Eloquent\Model as NeoEloquent;
+use Vinelab\NeoEloquent\Eloquent\Relations\HasMany;
 
 class User extends NeoEloquent implements
     AuthenticatableContract,
@@ -72,6 +73,19 @@ class User extends NeoEloquent implements
     public function balance()
     {
         return $this->hasOne(Balance::class, 'HAS_BALANCE');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'PAY');
+    }
+
+    public function withdraws()
+    {
+        return $this->hasMany(Withdraw::class, 'WITHDRAW');
     }
 
     /*

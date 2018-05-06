@@ -2,12 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Validation\ValidationException;
-
-class LoginFormRequest extends BaseAPIRequest
+class PaymentCreateRequest extends BaseAPIRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,8 +22,8 @@ class LoginFormRequest extends BaseAPIRequest
     public function rules()
     {
         return [
-            'login'  => 'required|string',
-            'password'  => 'required|string',
+            'amount'    => 'required|numeric',
+            'wallet'    => 'required|string|size:3'
         ];
     }
 
@@ -40,8 +35,11 @@ class LoginFormRequest extends BaseAPIRequest
     public function messages()
     {
         return [
-            'login.required'        => 'Логин обязателен',
-            'password.required'     => 'Пароль обязателен',
+            'amount.required'   => 'Необходимо указать количество',
+            'amount.numeric'    => 'Введите корректное число',
+            //
+            'wallet.required'   => 'Необходимо указать кошелек',
+            'wallet.size'       => 'Введите корректный адрес'
         ];
     }
 }

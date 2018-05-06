@@ -30,8 +30,16 @@ Route::prefix('v1')->group(function () {
             Route::get('/balance', 'API\UserController@user_balance');
         });
 
+        Route::prefix('payment')->group(function () {
+            Route::post('/create', 'API\PaymentController@create');
+        });
+
+        Route::prefix('withdraw')->group(function () {
+            Route::post('/create', 'API\WithdrawController@create');
+        });
+
         Route::prefix('fund')->group(function () {
-            Route::get('create', 'FundController@create');
+            Route::post('create', 'FundController@create');
             Route::get('find/{slug}', 'FundController@get');
         });
 
