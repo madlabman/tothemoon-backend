@@ -6,6 +6,8 @@ use App\Balance;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginFormRequest;
 use App\Http\Requests\RegisterFormRequest;
+use App\Library\PromoCode;
+use App\Repository\UserRepository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -32,7 +34,7 @@ class AuthController extends Controller
                         ]
                     ],
                     'msg' => 'Invalid Credentials.'
-                ], 400);
+                ]);
             }
         } catch (JWTException $ex) {
             return response()->json([
@@ -72,7 +74,23 @@ class AuthController extends Controller
             $user->login = $request->post('username');
             $user->phone = $request->post('phone');
             $user->password = bcrypt($request->post('password'));
+
+            // Generate promo_code
+            do {
+                $promo_code = PromoCode::generate(8);
+            } while (User::where('promo_code', $promo_code)->first() !== null);
+            $user->promo_code = $promo_code;
+
+            // Save user
             $user->save();
+
+            // Check promo
+            if (!empty($promo = $request->post('promo'))) {
+                $promo_owner = User::where('promo_code', $promo)->first();
+                if (!empty($promo_owner)) {
+                    $promo_owner->referrals()->save($user);
+                }
+            }
 
             $balance = new Balance();
             $user->balance()->save($balance);
@@ -80,6 +98,7 @@ class AuthController extends Controller
             return response()->json([
                 'status'    => 'error',
                 'error'     => 'Ошибка регистрации, повторите позднее.',
+                'ex'        => $ex->getMessage()
             ], 500);
         }
 

@@ -28,6 +28,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/all', 'API\UserController@users');
             Route::get('/', 'API\UserController@user');
             Route::get('/balance', 'API\UserController@user_balance');
+            Route::get('/leader', 'API\UserController@leader');
+            Route::get('/ref_count', 'API\UserController@ref_count');
         });
 
         Route::prefix('payment')->group(function () {
@@ -36,6 +38,10 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('withdraw')->group(function () {
             Route::post('/create', 'API\WithdrawController@create');
+        });
+
+        Route::prefix('signal')->group(function () {
+            Route::get('/all', 'API\SignalController@all');
         });
 
         Route::prefix('fund')->group(function () {

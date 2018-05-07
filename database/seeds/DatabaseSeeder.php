@@ -1,6 +1,7 @@
 <?php
 
 use App\Balance;
+use App\Signal;
 use App\User;
 use Illuminate\Database\Seeder;
 
@@ -23,16 +24,21 @@ class DatabaseSeeder extends Seeder
 //
 //        echo $user->id;
 
-        /** @var User $user */
-        $user = User::find(65);
+//        /** @var User $user */
+//        $user = User::find(65);
+//
+//        $balance = $user->balance;
+//        $balance->delete();
+//
+//        $balance = new Balance();
+//        $user->balance()->save($balance);
+//
+//        $user = $balance->user;
+//        echo $user->id . PHP_EOL;
 
-        $balance = $user->balance;
-        $balance->delete();
-
-        $balance = new Balance();
-        $user->balance()->save($balance);
-
-        $user = $balance->user;
-        echo $user->id . PHP_EOL;
+        $signal = Signal::create([
+            'info' => 'wdawd',
+            'level' => Signal::GREEN_LEVEL,
+        ]);
     }
 }

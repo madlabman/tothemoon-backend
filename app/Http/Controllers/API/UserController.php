@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Library\CryptoPrice;
 use App\User;
+use Illuminate\Support\Facades\Request;
 
 class UserController extends Controller
 {
@@ -73,6 +74,86 @@ class UserController extends Controller
                 'status' => 'success',
                 'data' => auth()->user(),
             ]);
+        } catch (\Exception $ex) {
+            return response()->json([], 500);
+        }
+    }
+
+    public function leader()
+    {
+        try {
+            return response()->json([
+                'status' => 'success',
+                'leader' => auth()->user()->leader,
+            ]);
+        } catch (\Exception $ex) {
+            return response()->json([], 500);
+        }
+    }
+
+    public function ref_count()
+    {
+        try {
+            return response()->json([
+                'status' => 'success',
+                'ref_count' => count(auth()->user()->referrals)
+            ]);
+        } catch (\Exception $ex) {
+            return response()->json([], 500);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        try {
+            if (empty($request->post('name'))) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => [
+                        'name'  => [
+                            'Введите имя'
+                        ]
+                    ]
+                ]);
+            }
+
+            $user = auth()->user();
+            $user_data = [];
+            $user_data['name'] = $request->post('name');
+
+            // Update user data
+            $user->update($user_data);
+
+            return response()->json([
+                'status' => 'success',
+            ]);
+        } catch (\Exception $ex) {
+            return response()->json([], 500);
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            if (bcrypt($request->post('old_password')) === $user->getAuthPassword()) {
+                $password = bcrypt($request->post('new_password'));
+                $user->password = $password;
+                $user->save();
+
+                return response()->json([
+                    'status' => 'success',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => [
+                        'password'  => [
+                            'Неверный пароль'
+                        ]
+                    ]
+                ]);
+            }
         } catch (\Exception $ex) {
             return response()->json([], 500);
         }

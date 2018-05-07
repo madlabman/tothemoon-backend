@@ -88,6 +88,38 @@ class User extends NeoEloquent implements
         return $this->hasMany(Withdraw::class, 'WITHDRAW');
     }
 
+    public function leader()
+    {
+        return $this->belongsTo(User::class, 'HAS_REFERRAL');
+    }
+
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'HAS_REFERRAL');
+    }
+
+    public function hasSignalAccess(int $level)
+    {
+        return $this->signal_access & $level;
+    }
+
+    public function signals()
+    {
+        $levels = [
+            Signal::RED_LEVEL,
+            Signal::YELLOW_LEVEL,
+            Signal::GREEN_LEVEL,
+        ];
+
+        foreach ($levels as $level) {
+            if (!$this->hasSignalAccess($level)) {
+                unset($level);
+            }
+        }
+
+        return Signal::whereIn('level', $levels)->where('created_at', '<', 's_a_expired_at')->get();
+    }
+
     /*
      *
      * Implement JWTSubject
