@@ -1,6 +1,7 @@
 <?php
 
 use App\Balance;
+use App\Message;
 use App\Signal;
 use App\User;
 use Illuminate\Database\Seeder;
@@ -36,9 +37,26 @@ class DatabaseSeeder extends Seeder
 //        $user = $balance->user;
 //        echo $user->id . PHP_EOL;
 
-        $signal = Signal::create([
-            'info' => 'wdawd',
-            'level' => Signal::GREEN_LEVEL,
+//        $signal = Signal::create([
+//            'info' => 'wdawd',
+//            'level' => Signal::GREEN_LEVEL,
+//        ]);
+
+        $admin = User::where('login', 'admin')->first();
+        $test = User::where('login', 'test')->first();
+
+        $message = Message::create([
+            'text' => 'Привет, тест!'
         ]);
+        $message->toUser()->save($test);
+        $relation = $message->fromUser()->associate($admin);
+        $relation->save();
+
+        $message = Message::create([
+            'text' => 'Привет, админ!'
+        ]);
+        $message->toUser()->save($admin);
+        $relation = $message->fromUser()->associate($test);
+        $relation->save();
     }
 }
