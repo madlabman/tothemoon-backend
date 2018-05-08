@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Library\CryptoPrice;
 use App\User;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -132,12 +134,12 @@ class UserController extends Controller
         }
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request)
     {
         try {
             $user = auth()->user();
-            if (bcrypt($request->post('old_password')) === $user->getAuthPassword()) {
-                $password = bcrypt($request->post('new_password'));
+            if (Hash::check($request->post('old'), $user->getAuthPassword())) {
+                $password = bcrypt($request->post('new'));
                 $user->password = $password;
                 $user->save();
 
@@ -148,7 +150,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'errors' => [
-                        'password'  => [
+                        'old'  => [
                             'Неверный пароль'
                         ]
                     ]

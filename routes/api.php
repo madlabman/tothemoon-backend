@@ -30,6 +30,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/balance', 'API\UserController@user_balance');
             Route::get('/leader', 'API\UserController@leader');
             Route::get('/ref_count', 'API\UserController@ref_count');
+            Route::post('/update', 'API\UserController@update');
+            Route::post('/password', 'API\UserController@updatePassword');
         });
 
         Route::prefix('payment')->group(function () {
