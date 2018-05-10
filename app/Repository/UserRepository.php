@@ -24,4 +24,15 @@ class UserRepository extends BaseRepo
 
         return $this->convertResultSet($result);
     }
+
+    public function dialogs(User $user)
+    {
+        $queryString = 'MATCH (s:User)-[]-(:Message)-[]-(t:User) WHERE ID(s) = {nodeId} RETURN DISTINCT t;';
+        $query = new Query($this->client, $queryString, [
+            'nodeId' => $user->id,
+        ]);
+        $result = $query->getResultSet();
+
+        return $this->convertResultSet($result);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Notifications\Notifiable;
 use Vinelab\NeoEloquent\Eloquent\Model as NeoEloquent;
 
 class Message extends NeoEloquent
@@ -15,6 +16,7 @@ class Message extends NeoEloquent
      */
     protected $fillable = [
         'text',
+        'sender',
     ];
 
     /**
@@ -32,9 +34,14 @@ class Message extends NeoEloquent
      * @var array
      */
     protected $hidden = [
-        'created_at',
+//        'created_at',
         'updated_at',
     ];
+
+    public function getKey()
+    {
+        return $this->id;
+    }
 
     /*
      *

@@ -139,6 +139,7 @@ abstract class BaseRepo
         $models=[];
         foreach ($resultSet as $row) {
             $attributes = $row['t']->getProperties();
+            $attributes['id'] = $row['t']->getId();
             $model = $this->model->newFromBuilder($attributes);
             $model->setConnection(DB::connection('neo4j'));
             $models[] = $model;

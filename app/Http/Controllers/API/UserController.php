@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Library\CryptoPrice;
+use App\Repository\MessageRepository;
+use App\Repository\UserRepository;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

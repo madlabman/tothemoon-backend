@@ -46,14 +46,16 @@ class DatabaseSeeder extends Seeder
         $test = User::where('login', 'test')->first();
 
         $message = Message::create([
-            'text' => 'Привет, тест!'
+            'text' => 'Привет, тест!',
+            'sender' => $admin->uuid,
         ]);
         $message->toUser()->save($test);
         $relation = $message->fromUser()->associate($admin);
         $relation->save();
 
         $message = Message::create([
-            'text' => 'Привет, админ!'
+            'text' => 'Привет, админ!',
+            'sender' => $test->uuid,
         ]);
         $message->toUser()->save($admin);
         $relation = $message->fromUser()->associate($test);

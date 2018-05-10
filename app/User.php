@@ -40,7 +40,14 @@ class User extends NeoEloquent implements
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'is_admin'
+        'password',
+        'remember_token',
+        'is_admin',
+        'open_signal_access',
+        'signal_access',
+        'invest_level',
+        'updated_at',
+        'created_at',
     ];
 
     /**
