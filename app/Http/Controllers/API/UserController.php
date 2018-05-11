@@ -83,6 +83,11 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Return user which has current user as referral.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function leader()
     {
         try {
@@ -95,6 +100,11 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Return count of referrals of current user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function ref_count()
     {
         try {
@@ -107,6 +117,12 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Update profile info for user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         try {
@@ -136,6 +152,12 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Change password of current user.
+     *
+     * @param UpdatePasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updatePassword(UpdatePasswordRequest $request)
     {
         try {

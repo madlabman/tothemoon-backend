@@ -42,23 +42,23 @@ class DatabaseSeeder extends Seeder
 //            'level' => Signal::GREEN_LEVEL,
 //        ]);
 
-        $admin = User::where('login', 'admin')->first();
-        $test = User::where('login', 'test')->first();
-
-        $message = Message::create([
-            'text' => 'Привет, тест!',
-            'sender' => $admin->uuid,
-        ]);
-        $message->toUser()->save($test);
-        $relation = $message->fromUser()->associate($admin);
-        $relation->save();
-
-        $message = Message::create([
-            'text' => 'Привет, админ!',
-            'sender' => $test->uuid,
-        ]);
-        $message->toUser()->save($admin);
-        $relation = $message->fromUser()->associate($test);
-        $relation->save();
+//        $admin = User::where('login', 'admin')->first();
+//        $test = User::where('login', 'test')->first();
+//
+//        $message = Message::create([
+//            'text' => 'Привет, тест!',
+//            'sender' => $admin->uuid,
+//        ]);
+//        $message->toUser()->save($test);
+//        $relation = $message->fromUser()->associate($admin);
+//        $relation->save();
+//
+//        $message = Message::create([
+//            'text' => 'Привет, админ!',
+//            'sender' => $test->uuid,
+//        ]);
+//        $message->toUser()->save($admin);
+//        $relation = $message->fromUser()->associate($test);
+//        $relation->save();
     }
 }

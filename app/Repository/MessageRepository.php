@@ -39,6 +39,13 @@ class MessageRepository extends BaseRepo
 
     }
 
+    /**
+     * Return messages between two users.
+     *
+     * @param User $left
+     * @param User $right
+     * @return Collection
+     */
     public function chat(User $left, User $right)
     {
         $queryString = "MATCH (a:User)-[]-(t:Message)-[]-(b:User) WHERE a.uuid = {uuid1} AND b.uuid = {uuid2} RETURN t ORDER BY t.created_at DESC;";
@@ -51,6 +58,12 @@ class MessageRepository extends BaseRepo
         return $this->convertResultSet($result);
     }
 
+    /**
+     * Retrieve all messages for user.
+     *
+     * @param User $user
+     * @return Collection
+     */
     public function allForUser(User $user)
     {
         $queryString = "MATCH (a:User)-[]-(t:Message)-[]-(b:User) WHERE a.uuid = {uuid1} RETURN t ORDER BY t.created_at DESC;";
