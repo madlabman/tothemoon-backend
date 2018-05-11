@@ -127,6 +127,11 @@ class User extends NeoEloquent implements
         return Signal::whereIn('level', $levels)->where('created_at', '<', 's_a_expired_at')->get();
     }
 
+    public function incomingMessages()
+    {
+        return $this->belongsToMany(Message::class, 'RECEIVED_MESSAGE');
+    }
+
     /*
      *
      * Implement JWTSubject

@@ -37,7 +37,8 @@ Route::prefix('v1')->group(function () {
                 Route::get('/all', 'API\ChatController@chat_all');
                 Route::get('/list', 'API\ChatController@chat_list');
                 Route::get('/read/{id}', 'API\ChatController@read');
-                Route::post('/post', 'API\ChatController@create');
+                Route::post('/post', 'API\ChatController@compose');
+                Route::get('/unread_count', 'API\ChatController@unread_count');
             });
         });
 

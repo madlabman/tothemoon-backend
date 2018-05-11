@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ComposeMessageRequest;
 use App\Message;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
@@ -12,6 +13,12 @@ use Illuminate\Http\Request;
 class ChatController extends Controller
 {
 
+    /**
+     * Return list of users with messages from or to current user.
+     *
+     * @param UserRepository $userRepository
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function chat_list(UserRepository $userRepository)
     {
         try {
@@ -30,7 +37,14 @@ class ChatController extends Controller
         }
     }
 
-    public function chat($uuid, MessageRepository $messageRepository)
+    /**
+     * Return messages from one user to another.
+     *
+     * @param $uuid - Uuid
+     * @param MessageRepository $messageRepository
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function chat(string $uuid, MessageRepository $messageRepository)
     {
         try {
             $chat_user = User::where('uuid', $uuid)->first();
@@ -51,6 +65,12 @@ class ChatController extends Controller
         }
     }
 
+    /**
+     * Return incoming and outgoing messages.
+     *
+     * @param MessageRepository $messageRepository
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function chat_all(MessageRepository $messageRepository)
     {
         try {
@@ -69,7 +89,13 @@ class ChatController extends Controller
         }
     }
 
-    public function read($id)
+    /**
+     * Mark single message as read.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function read(int $id)
     {
         try {
             $message = Message::find($id);
@@ -93,7 +119,13 @@ class ChatController extends Controller
         }
     }
 
-    public function create(Request $request)
+    /**
+     * Create new outgoing message.
+     *
+     * @param ComposeMessageRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function compose(ComposeMessageRequest $request)
     {
         try {
             $receiver = User::where('phone', $request->post('to'))->first();
@@ -114,6 +146,24 @@ class ChatController extends Controller
                     ]
                 ]);
             }
+        } catch (\Exception $ex) {
+            return response()->json([], 500);
+        }
+    }
+
+    /**
+     * Return count of unread messages of current user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function unread_count()
+    {
+        try {
+            $count = auth()->user()->incomingMessages->where('is_read', false)->count();
+            return response()->json([
+                'status' => 'success',
+                'count' => $count,
+            ]);
         } catch (\Exception $ex) {
             return response()->json([], 500);
         }
