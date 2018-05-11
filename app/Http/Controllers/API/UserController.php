@@ -41,8 +41,8 @@ class UserController extends Controller
         try {
             if (!empty(auth()->user()->balance)) {
                 $btc = round( auth()->user()->balance->body, 3 );
-                $usd = CryptoPrice::convert($btc, 'btc', 'usd');
-                $rub = CryptoPrice::convert($btc, 'btc', 'rub');
+                $usd = round(CryptoPrice::convert($btc, 'btc', 'usd'), 2);
+                $rub = round(CryptoPrice::convert($btc, 'btc', 'rub'), 2);
 
                 return response()->json([
                     'status'    => 'success',
