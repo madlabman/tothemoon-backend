@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -54,6 +55,22 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
     }
+
+    /**
+     * Disable registration.
+     */
+
+    public function showRegistrationForm()
+    {
+        return redirect()->route('home');
+    }
+
+
+    public function register(Request $request)
+    {
+        return false;
+    }
+
 
     /**
      * Create a new user instance after a valid registration.
