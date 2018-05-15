@@ -10,64 +10,75 @@
 
     <title>ToTheMoon Admin</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.1/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.1/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.1/js/uikit-icons.min.js"></script>
 </head>
-<body>
+<body class="uk-background-secondary uk-light" style="min-height: 100vh;">
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    ToTheMoon Admin
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            <li><a class="nav-link" href="{{ route('login') }}">{{ __('Вход') }}</a></li>
-{{--                            <li><a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a></li>--}}
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
-                                </a>
-
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
+        <nav class="uk-background-secondary uk-padding-small" uk-navbar>
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li>
+                        <a href="{{ url('/') }}">
+                            <h1 class="uk-heading-bullet uk-dark">ToTheMoon Admin</h1>
+                        </a>
+                        @auth
+                            <div class="uk-navbar-dropdown uk-background-secondary uk-dark">
+                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                    <li><a class="nav-link" href="{{ route('signals') }}">Сигналы</a></li>
+                                    <li><a class="nav-link" href="{{ route('payments') }}">Пополнения</a></li>
+                                    <li><a class="nav-link" href="{{ route('withdraws') }}">Выплаты</a></li>
+                                    <li><a class="nav-link" href="{{ route('profit') }}">Суточный доход</a></li>
+                                </ul>
+                            </div>
+                        @endauth
+                    </li>
+                </ul>
+            </div>
+            <div class="uk-navbar-right">
+                <ul class="uk-navbar-nav">
+                @guest
+                    <li>
+                        <div>
+                            <a class="uk-button uk-button-default" href="{{ route('login') }}">{{ __('Вход') }}</a>
+                        </div>
+                    </li>
+                @else
+                    <li>
+                        <div>
+                            <a href="#" class="uk-padding">{{ Auth::user()->name }}</a>
+                            <div class="uk-navbar-dropdown uk-background-secondary uk-dark">
+                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                    <li class="uk-active">
+                                        <a class="dropdown-item" href="{{ route('logout') }}" style="color: #fff;"
+                                           onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Выйти') }}
-                                    </a>
+                                            {{ __('Выйти') }}
+                                        </a>
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
+                    </li>
+                @endguest
+                </ul>
             </div>
         </nav>
 
-        <main class="py-4">
+        <main>
             @yield('content')
         </main>
     </div>

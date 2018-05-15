@@ -14,9 +14,9 @@
 Auth::routes();
 
 Route::get('/', function () {
-    return redirect('home');
+    return redirect('payments');
 });
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'PaymentsController@index')->name('home');
 
 Route::group(['middleware' => ['auth']], function() {
 
