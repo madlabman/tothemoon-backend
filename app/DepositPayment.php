@@ -2,11 +2,9 @@
 
 namespace App;
 
-use Vinelab\NeoEloquent\Eloquent\Model as NeoEloquent;
-
-class Balance extends NeoEloquent
+class DepositPayment extends Payment
 {
-    protected $label = 'Balance';
+    protected $label = 'DepositPayment';
 
     /**
      * The attributes that are mass assignable.
@@ -14,8 +12,8 @@ class Balance extends NeoEloquent
      * @var array
      */
     protected $fillable = [
-        'body',
-        'bonus',
+        'amount',
+        'wallet',
     ];
 
     /**
@@ -24,8 +22,7 @@ class Balance extends NeoEloquent
      * @var array
      */
     protected $attributes = [
-        'body'  => 0.0,
-        'bonus' => 0.0,
+        'is_confirmed'  => false,
     ];
 
     /**
@@ -33,10 +30,7 @@ class Balance extends NeoEloquent
      *
      * @var array
      */
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
+    protected $hidden = [];
 
     /*
      *
@@ -47,13 +41,8 @@ class Balance extends NeoEloquent
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'HAS_BALANCE');
-    }
-
     public function deposit()
     {
-        return $this->belongsTo(Deposit::class, 'HAS_BALANCE');
+        return $this->belongsTo(Deposit::class, 'PAY');
     }
 }

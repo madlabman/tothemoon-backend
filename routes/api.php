@@ -59,6 +59,12 @@ Route::prefix('v1')->group(function () {
             Route::get('find/{slug}', 'FundController@get');
         });
 
+        Route::prefix('deposit')->group(function () {
+            Route::post('create', 'API\DepositController@create');
+            Route::get('delete/{id}', 'API\DepositController@delete');
+            Route::get('/{id}', 'API\DepositController@read');
+        });
+
     });
 
 });
