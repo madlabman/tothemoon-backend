@@ -78,6 +78,16 @@
             </div>
         </nav>
 
+        @if (session('status'))
+            <script>
+                UIkit.notification({
+                    message: "{{ session('status') }}",
+                    status: 'primary',
+                    timeout: 3000
+                });
+            </script>
+        @endif
+
         <main>
             @yield('content')
         </main>

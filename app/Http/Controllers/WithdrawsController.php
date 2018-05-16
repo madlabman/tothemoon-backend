@@ -18,6 +18,7 @@ class WithdrawsController extends Controller
         $withdraw = Withdraw::find($id);
         if (!empty($withdraw)) {
             $withdraw->delete();
+            \request()->session()->flash('status', 'Выплата удалена!');
         }
 
         return redirect('withdraws');
@@ -29,6 +30,7 @@ class WithdrawsController extends Controller
         if (!empty($withdraw)) {
             $withdraw->is_confirmed = true;
             $withdraw->save();
+            \request()->session()->flash('status', 'Выплата подтверждена!');
         }
 
         return redirect('withdraws');

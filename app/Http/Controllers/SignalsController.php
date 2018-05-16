@@ -39,7 +39,7 @@ class SignalsController extends Controller
                 $signal->update($data);
             }
         }
-
+        $request->session()->flash('status', 'Сигнал обновлен!');
         return redirect()->back();
     }
 
@@ -52,6 +52,7 @@ class SignalsController extends Controller
     {
         if ($data = $this->validateSignalRequest($request)) {
             $signal = Signal::create($data);
+            $request->session()->flash('status', 'Сигнал создан!');
             return redirect('/signals/edit/' . $signal->id);
         }
 
@@ -64,7 +65,7 @@ class SignalsController extends Controller
         if (!empty($signal)) {
             $signal->delete();
         }
-
+        \request()->session()->flash('status', 'Сигнал удален!');
         return redirect('signals');
     }
 }

@@ -39,6 +39,7 @@ class ProfitController extends Controller
         $this->validateSignalRequest($request);
         unset($request->_token);
         $profit = Profit::create($request->all());
+        $request->session()->flash('status', 'Значение добавлено!');
         return redirect('/profit/edit/' . $profit->id);
     }
 
@@ -54,8 +55,23 @@ class ProfitController extends Controller
         $profit = Profit::find($id);
         if (!empty($profit)) {
             $profit->delete();
+            \request()->session()->flash('status', 'Значение удалено!');
         }
 
         return redirect('profit');
+    }
+
+    public function update($id, Request $request)
+    {
+        $this->validateSignalRequest($request);
+
+        $profit = Profit::find($id);
+        if (!empty($profit)) {
+            $profit->amount = $request->post('amount');
+            $profit->save();
+            $request->session()->flash('status', 'Сумма обновлена!');
+        }
+
+        return redirect()->back();
     }
 }

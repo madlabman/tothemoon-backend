@@ -1,44 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header d-flex align-items-center">
-                        <div>Выплаты</div>
-                    </div>
+    <div class="uk-container uk-padding">
+        <h2 class="uk-text-center">
+            Выплаты
+        </h2>
+    </div>
 
-                    <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success">
-                                {{ session('status') }}
-                            </div>
-                        @endif
+    <div class="uk-container uk-padding">
+        <div uk-grid>
+            @foreach($withdraws as $withdraw)
 
-                        @foreach($withdraws as $withdraw)
-                            <div class="border p-4 mb-2">
-                                <div>
-                                    <p>Сумма: <span style="font-family: var(--font-family-monospace);">{{ $withdraw->amount }} BTC</span></p>
-                                    <p>На адрес: <span style="font-family: var(--font-family-monospace);">{{ $withdraw->wallet }}</span></p>
-                                    <p>
-                                        Пользователь:
-                                        <span style="font-family: var(--font-family-monospace);">
-                                            {{ $withdraw->user->phone }}
-                                        </span>
-                                    </p>
-                                </div>
-                                <div>
-                                    @if($withdraw->is_confirmed == false)
-                                        <a href="{{ url('/withdraws/confirm/' . $withdraw->id) }}" class="btn btn-primary">Подтвердить перевод</a>
-                                    @endif
-                                    <a href="{{ url('/withdraws/delete/' . $withdraw->id) }}" class="btn btn-danger">Удалить</a>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+            <div class="uk-card uk-card-small uk-card-hover uk-light uk-card-secondary uk-card-body uk-width-1-2@m">
+                <h3 class="uk-card-title">{{ $withdraw->amount }} BTC</h3>
+                <p>
+                    На адрес: <em>{{ $withdraw->wallet }}</em><br>
+                    Пользователь: <em><small>{{ $withdraw->user->phone }}</small></em>
+                </p>
+                <div>
+                    @if($withdraw->is_confirmed == false)
+                        <a href="{{ url('/withdraws/confirm/' . $withdraw->id) }}" class="uk-button uk-button-primary uk-button-small">Подтвердить перевод</a>
+                    @endif
+                    <a href="{{ url('/withdraws/delete/' . $withdraw->id) }}" class="uk-button uk-button-danger uk-button-small">Удалить</a>
                 </div>
             </div>
+
+            @endforeach
         </div>
     </div>
 @endsection

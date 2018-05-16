@@ -18,6 +18,7 @@ class PaymentsController extends Controller
         $payment = Payment::find($id);
         if (!empty($payment)) {
             $payment->delete();
+            \request()->session()->flash('status', 'Пополнение удалено!');
         }
 
         return redirect('payments');
@@ -29,6 +30,7 @@ class PaymentsController extends Controller
         if (!empty($payment)) {
             $payment->is_confirmed = true;
             $payment->save();
+            \request()->session()->flash('status', 'Пополнение подтверждено!');
         }
 
         return redirect()->back();

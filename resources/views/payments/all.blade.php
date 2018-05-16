@@ -1,17 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
-    @if (session('status'))
-        <script>
-            UIkit.notification({
-                message: "{{ session('status') }}",
-                status: 'primary',
-                timeout: 5000
-            });
-        </script>
-    @endif
-
     <div class="uk-container uk-padding">
         <h2 class="uk-text-center">Пополнения баланса</h2>
 
