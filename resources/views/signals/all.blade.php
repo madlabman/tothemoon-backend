@@ -14,7 +14,7 @@
         <div uk-grid>
             @foreach($signals as $signal)
 
-                <div class="uk-card uk-card-small uk-card-hover uk-light uk-card-secondary uk-card-body uk-width-1-2@m">
+                <div class="uk-card uk-card-small uk-card-hover uk-light uk-card-secondary uk-card-body uk-width-1-3@m">
                     <h3 class="uk-card-title uk-text-small">
                         @php($style = 'background-color:')
                         @switch($signal->level)
@@ -41,5 +41,13 @@
 
             @endforeach
         </div>
+
+        @if(!empty($pages))
+            <ul class="uk-pagination uk-flex-center uk-padding">
+                @foreach($pages as $page)
+                    <li class="@if($page['active']){{ 'uk-active' }}@endif"><a href="{{ $page['link'] }}">{{ $page['text'] }}</a></li>
+                @endforeach
+            </ul>
+        @endif
     </div>
 @endsection

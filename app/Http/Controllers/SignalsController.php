@@ -7,9 +7,30 @@ use Illuminate\Http\Request;
 
 class SignalsController extends Controller
 {
-    public function index()
+    protected const PER_PAGE = 10;
+
+    public function index(Request $request)
     {
-        return view('signals.all')->with('signals', Signal::all());
+        $skip = 0;
+        if (!empty($page = $request->get('page'))) {
+            $skip = ($page - 1) * self::PER_PAGE;
+        }
+        $signals = Signal::skip($skip)->take(self::PER_PAGE)->get();
+        $count = Signal::count();
+        $pages = [];
+        if (self::PER_PAGE < $count) {
+            for ($i = 1; $i <= ceil($count / self::PER_PAGE); $i++) {
+                array_push($pages, [
+                    'text'      => $i,
+                    'link'      => url('/signals/?page=' . $i),
+                    'active'    => $request->get('page') == $i
+                ]);
+            }
+        }
+        return view('signals.all')->with([
+            'signals'     => $signals,
+            'pages'     => $pages,
+        ]);
     }
 
     public function validateSignalRequest(Request $request)

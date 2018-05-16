@@ -26,5 +26,13 @@
                 </div>
             @endforeach
         </div>
+
+        @if(!empty($pages))
+        <ul class="uk-pagination uk-flex-center uk-padding">
+            @foreach($pages as $page)
+            <li class="@if($page['active']){{ 'uk-active' }}@endif"><a href="{{ $page['link'] }}">{{ $page['text'] }}</a></li>
+            @endforeach
+        </ul>
+        @endif
     </div>
 @endsection

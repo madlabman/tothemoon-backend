@@ -7,10 +7,30 @@ use Illuminate\Http\Request;
 
 class WithdrawsController extends Controller
 {
-    public function index()
+    protected const PER_PAGE = 10;
+
+    public function index(Request $request)
     {
-        $withdraws = Withdraw::all();
-        return view('withdraws.all')->with(compact('withdraws'));
+        $skip = 0;
+        if (!empty($page = $request->get('page'))) {
+            $skip = ($page - 1) * self::PER_PAGE;
+        }
+        $withdraws = Withdraw::skip($skip)->take(self::PER_PAGE)->get();
+        $count = Withdraw::count();
+        $pages = [];
+        if (self::PER_PAGE < $count) {
+            for ($i = 1; $i <= ceil($count / self::PER_PAGE); $i++) {
+                array_push($pages, [
+                    'text'      => $i,
+                    'link'      => url('/withdraws/?page=' . $i),
+                    'active'    => $request->get('page') == $i
+                ]);
+            }
+        }
+        return view('withdraws.all')->with([
+            'withdraws'     => $withdraws,
+            'pages'         => $pages,
+        ]);
     }
 
     public function delete($id)

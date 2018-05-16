@@ -7,10 +7,30 @@ use Illuminate\Http\Request;
 
 class PaymentsController extends Controller
 {
-    public function index()
+    protected const PER_PAGE = 10;
+
+    public function index(Request $request)
     {
-        $payments = Payment::all();
-        return view('payments.all')->with(compact('payments'));
+        $skip = 0;
+        if (!empty($page = $request->get('page'))) {
+            $skip = ($page - 1) * self::PER_PAGE;
+        }
+        $payments = Payment::skip($skip)->take(self::PER_PAGE)->get();
+        $count = Payment::count();
+        $pages = [];
+        if (self::PER_PAGE < $count) {
+            for ($i = 1; $i <= ceil($count / self::PER_PAGE); $i++) {
+                array_push($pages, [
+                    'text'      => $i,
+                    'link'      => url('/payments/?page=' . $i),
+                    'active'    => $request->get('page') == $i
+                ]);
+            }
+        }
+        return view('payments.all')->with([
+            'payments'     => $payments,
+            'pages'         => $pages,
+        ]);
     }
 
     public function delete($id)

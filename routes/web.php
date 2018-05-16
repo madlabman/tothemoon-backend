@@ -50,4 +50,13 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/delete/{id}', 'ProfitController@delete');
     });
 
+    Route::prefix('users')->group(function () {
+        Route::get('/', 'UsersController@index')->name('users');
+//        Route::get('/new', 'UsersController@new');
+//        Route::post('/new', 'UsersController@create');
+        Route::get('/edit/{id}', 'UsersController@edit');
+        Route::post('/edit/{id}', 'UsersController@update');
+        Route::get('/delete/{id}', 'UsersController@delete');
+    });
+
 });
