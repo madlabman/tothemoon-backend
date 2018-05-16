@@ -15,7 +15,7 @@ class WithdrawsController extends Controller
         if (!empty($page = $request->get('page'))) {
             $skip = ($page - 1) * self::PER_PAGE;
         }
-        $withdraws = Withdraw::skip($skip)->take(self::PER_PAGE)->get();
+        $withdraws = Withdraw::skip($skip)->take(self::PER_PAGE)->latest()->get();
         $count = Withdraw::count();
         $pages = [];
         if (self::PER_PAGE < $count) {

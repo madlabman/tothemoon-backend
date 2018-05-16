@@ -15,7 +15,7 @@ class SignalsController extends Controller
         if (!empty($page = $request->get('page'))) {
             $skip = ($page - 1) * self::PER_PAGE;
         }
-        $signals = Signal::skip($skip)->take(self::PER_PAGE)->get();
+        $signals = Signal::skip($skip)->take(self::PER_PAGE)->latest()->get();
         $count = Signal::count();
         $pages = [];
         if (self::PER_PAGE < $count) {

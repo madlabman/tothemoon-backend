@@ -18,7 +18,7 @@ class UsersController extends Controller
         if (!empty($page = $request->get('page'))) {
             $skip = ($page - 1) * self::PER_PAGE;
         }
-        $users = User::skip($skip)->take(self::PER_PAGE)->where('login', '<>', auth()->user()->login)->get();
+        $users = User::skip($skip)->take(self::PER_PAGE)->where('login', '<>', auth()->user()->login)->latest()->get();
         $count = User::count();
         $pages = [];
         if (self::PER_PAGE < $count) {

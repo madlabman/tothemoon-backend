@@ -15,7 +15,7 @@ class ProfitController extends Controller
         if (!empty($page = $request->get('page'))) {
             $skip = ($page - 1) * self::PER_PAGE;
         }
-        $profits = Profit::skip($skip)->take(self::PER_PAGE)->get();
+        $profits = Profit::skip($skip)->take(self::PER_PAGE)->latest()->get();
         $count = Profit::count();
         $pages = [];
         if (self::PER_PAGE < $count) {
