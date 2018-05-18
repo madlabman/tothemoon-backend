@@ -211,4 +211,6 @@ return [
 
     ],
 
+    'BTC_ADDRESS' => env('BTC_ADDRESS', null),
+
 ];

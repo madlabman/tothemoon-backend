@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaymentConfirmed;
 use App\Payment;
 use Illuminate\Http\Request;
 
@@ -48,8 +49,7 @@ class PaymentsController extends Controller
     {
         $payment = Payment::find($id);
         if (!empty($payment)) {
-            $payment->is_confirmed = true;
-            $payment->save();
+            \Event::fire(new PaymentConfirmed($payment));
             \request()->session()->flash('status', 'Пополнение подтверждено!');
         }
 

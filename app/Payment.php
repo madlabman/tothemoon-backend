@@ -32,6 +32,7 @@ class Payment extends NeoEloquent
      */
     protected $attributes = [
         'is_confirmed'  => false,
+        'tx_hash'       => null,
     ];
 
     /**

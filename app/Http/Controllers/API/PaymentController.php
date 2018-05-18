@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentCreateRequest;
+use App\Jobs\CheckAddress;
 use App\Payment;
 
 class PaymentController extends Controller

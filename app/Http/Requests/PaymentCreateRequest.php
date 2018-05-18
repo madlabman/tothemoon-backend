@@ -23,7 +23,7 @@ class PaymentCreateRequest extends BaseAPIRequest
     {
         return [
             'amount'    => 'required|numeric',
-            'wallet'    => 'required|string|size:3'
+            'wallet'    => 'required|string'
         ];
     }
 
