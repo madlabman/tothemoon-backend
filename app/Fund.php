@@ -16,7 +16,8 @@ class Fund extends NeoEloquent
     protected $fillable = [
         'slug',
         'name',
-        'balance',
+        'balance_usd',
+        'balance_btc',
         'token_count',
         'token_price',
     ];
@@ -27,7 +28,8 @@ class Fund extends NeoEloquent
      * @var array
      */
     protected $attributes = [
-        'balance'       => 0,
+        'balance_usd'   => 0,
+        'balance_btc'   => 0,
         'token_count'   => 0,
         'token_price'   => 0,
     ];

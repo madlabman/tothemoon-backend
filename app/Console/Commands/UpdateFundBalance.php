@@ -41,7 +41,8 @@ class UpdateFundBalance extends Command
     {
         $acc_list = BittrexHelper::get_balances();
         if (!empty($acc_list) && $acc_list['success']) {
-            $balance = 0;
+            $balance_usd = 0;
+            $balance_btc = 0;
             // Go through account list
             foreach ($acc_list['result'] as $account) {
                 // Check only positive balanced accounts
@@ -54,24 +55,26 @@ class UpdateFundBalance extends Command
 
                     if (!empty($btc_eq)) {
                         $amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
-                        $balance += $amount;
+                        $balance_btc += $btc_eq;
+                        $balance_usd += $amount;
                     }
                 }
             }
         }
 
-        if (!empty($balance)) {
-            $this->update_fund_balance($balance);
-            echo 'Computed balance at ' . Carbon::now()->toDateTimeString() . ' equal ' . $balance . '$' . PHP_EOL;
+        if (!empty($balance_btc) && !empty($balance_usd)) {
+            $this->update_fund_balance($balance_btc, $balance_usd);
+            echo 'Computed balance at ' . Carbon::now()->toDateTimeString() . ' equal ' . $balance_usd . '$' . PHP_EOL;
         }
     }
 
-    private function update_fund_balance(float $balance)
+    private function update_fund_balance(float $balance_btc, float $balance_usd)
     {
         $fund = Fund::where('slug', 'tothemoon')->first();
         if (!empty($fund) && $fund->token_count > 0) {
-            $fund->balance = $balance;
-            $fund->token_price = $balance / $fund->token_count;
+            $fund->balance_btc = $balance_btc;
+            $fund->balance_usd = $balance_usd;
+            $fund->token_price = $balance_usd / $fund->token_count;
             $fund->save();
         }
     }
