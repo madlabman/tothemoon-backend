@@ -51,7 +51,11 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('signal')->group(function () {
-            Route::get('/all', 'API\SignalController@all');
+            Route::get('/', 'API\SignalController@all');
+        });
+
+        Route::prefix('profit')->group(function () {
+            Route::get('/', 'API\ProfitController@all');
         });
 
         Route::prefix('fund')->group(function () {

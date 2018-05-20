@@ -49,4 +49,9 @@ class Fund extends NeoEloquent
      * Relations.
      *
      */
+
+    public function profits()
+    {
+        return $this->hasMany(Profit::class, 'PROFIT');
+    }
 }

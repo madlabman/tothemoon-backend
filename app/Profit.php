@@ -14,7 +14,10 @@ class Profit extends NeoEloquent
      * @var array
      */
     protected $fillable = [
-        'amount',
+        'token_change',
+        'token_change_percent',
+        'token_price',
+        'balance',
     ];
 
     /**
@@ -22,7 +25,12 @@ class Profit extends NeoEloquent
      *
      * @var array
      */
-    protected $attributes = [];
+    protected $attributes = [
+        'token_change'          => 0,
+        'token_change_percent'  => 0,
+        'token_price'           => 0,
+        'balance'               => 0,
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -36,4 +44,9 @@ class Profit extends NeoEloquent
      * Relations.
      *
      */
+
+    public function fund()
+    {
+        return $this->belongsTo(Fund::class, 'PROFIT');
+    }
 }

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Profit;
 use App\User;
 use Illuminate\Http\Request;
 
