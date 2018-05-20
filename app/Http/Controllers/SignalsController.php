@@ -57,6 +57,7 @@ class SignalsController extends Controller
         if ($data = $this->validateSignalRequest($request)) {
             $signal = Signal::find($id);
             if (!empty($signal)) {
+                $data['level'] = intval($data['level']);
                 $signal->update($data);
             }
         }
