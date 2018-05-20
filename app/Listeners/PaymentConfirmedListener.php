@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\PaymentConfirmed;
+use App\Fund;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -31,5 +32,11 @@ class PaymentConfirmedListener
         $event->payment->user->balance->body += $event->payment->amount;
         $event->payment->user->balance->save();
         $event->payment->save();
+        // Update fund tokens count
+        $fund = Fund::where('slug', '=', 'tothemoon')->first();
+        if (!empty($fund) && $fund->token_price > 0) {
+            $fund->token_count += $event->payment->amount / $fund->token_price;
+            $fund->save();
+        }
     }
 }

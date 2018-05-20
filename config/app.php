@@ -213,4 +213,7 @@ return [
 
     'BTC_ADDRESS' => env('BTC_ADDRESS', null),
 
+    'bittrex_key' => env('BITTREX_KEY', null),
+    'bittrex_secret' => env('BITTREX_SECRET', null),
+
 ];

@@ -60,5 +60,10 @@ class DatabaseSeeder extends Seeder
 //        $message->toUser()->save($admin);
 //        $relation = $message->fromUser()->associate($test);
 //        $relation->save();
+//
+//        \App\Fund::create([
+//            'name' => 'ToTheMoon',
+//            'slug' => 'tothemoon',
+//        ]);
     }
 }
