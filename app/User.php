@@ -118,9 +118,9 @@ class User extends NeoEloquent implements
             Signal::GREEN_LEVEL,
         ];
 
-        foreach ($levels as $level) {
-            if (!$this->hasSignalAccess($level)) {
-                unset($level);
+        foreach ($levels as $key => $value) {
+            if (!$this->hasSignalAccess($value)) {
+                unset($levels[$key]);
             }
         }
 
