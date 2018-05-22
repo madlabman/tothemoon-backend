@@ -52,19 +52,26 @@ class GetDayProfitValue extends Command
                     $last_profit->created_at->month,
                     $last_profit->created_at->day
                 );
-                if ($today == $last_profit_day) exit;
+//                if ($today == $last_profit_day) exit;
                 // Getting balance diff
                 $current_price = $fund->token_price;
                 $last_price = $last_profit->token_price;
                 if ($last_price > 0) {
+                    // token
                     $change = $current_price - $last_price;
                     $change_percent = $change / $last_price;
+                    // btc
+                    $btc_change = $fund->balance_btc * $change_percent;
+                    // usd
+                    $usd_change = $fund->balance_usd * $change_percent;
                     // Store profit value
                     $profit = Profit::create([
                         'token_change'          => $change,
                         'token_change_percent'  => $change_percent,
                         'token_price'           => $current_price,
-                        'balance'               => $fund->balance,
+                        'btc_change'            => $btc_change,
+                        'usd_change'            => $usd_change,
+                        'balance'               => $fund->balance_usd,
                     ]);
                     $profit->fund()->associate($fund)->save();
                 }
@@ -73,6 +80,7 @@ class GetDayProfitValue extends Command
                 // Create new profit value
                 $profit = Profit::create([
                     'token_price'           => $current_price,
+                    'balance'               => $fund->balance_usd,
                 ]);
                 $profit->fund()->associate($fund)->save();
             }

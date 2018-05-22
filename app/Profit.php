@@ -17,6 +17,8 @@ class Profit extends NeoEloquent
         'token_change',
         'token_change_percent',
         'token_price',
+        'btc_change',
+        'usd_change',
         'balance',
     ];
 
@@ -29,6 +31,8 @@ class Profit extends NeoEloquent
         'token_change'          => 0,
         'token_change_percent'  => 0,
         'token_price'           => 0,
+        'btc_change'            => 0,
+        'usd_change'            => 0,
         'balance'               => 0,
     ];
 
