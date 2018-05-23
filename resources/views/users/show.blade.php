@@ -56,6 +56,18 @@
                     @endif
                 </div>
 
+                <div class="uk-margin">
+                    <label class="uk-form-label">Уровень</label>
+                    <div class="uk-form-controls">
+                        <input type="number" min="1" max="5" name="invest_level" class="uk-input" value="@if (!empty($user)){{ $user->invest_level }}@endif">
+                    </div>
+                    @if ($errors->has('invest_level'))
+                        <div class="uk-alert-danger" uk-alert>
+                            <strong>{{ $errors->first('invest_level') }}</strong>
+                        </div>
+                    @endif
+                </div>
+
             </fieldset>
 
             <button type="submit" class="uk-button uk-button-primary">

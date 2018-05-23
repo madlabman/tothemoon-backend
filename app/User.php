@@ -32,6 +32,7 @@ class User extends NeoEloquent implements
         'login',
         'password',
         'email',
+        'invest_level',
     ];
 
     /**
