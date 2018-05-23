@@ -68,3 +68,5 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
 });
+
+Route::get('test', 'TestController@index');
