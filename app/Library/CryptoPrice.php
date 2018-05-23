@@ -19,6 +19,7 @@ class CryptoPrice
                 foreach ($ticker as $symbol => $tick) {
                     Cache::add(mb_strtolower($symbol), $tick['last'], 10);
                 }
+                Cache::add('btc', 1 / $ticker['USD']['last'], 10);
             }
         } catch (GuzzleException $ex) {
             //
@@ -55,5 +56,10 @@ class CryptoPrice
     public static function btc_rub(): ?float
     {
         return Cache::get('rub');
+    }
+
+    public static function usd_btc()
+    {
+        return Cache::get('btc');
     }
 }

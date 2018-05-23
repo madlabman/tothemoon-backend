@@ -20,6 +20,7 @@ class Fund extends NeoEloquent
         'balance_btc',
         'token_count',
         'token_price',
+        'manual_balance_usd',
     ];
 
     /**
@@ -28,10 +29,11 @@ class Fund extends NeoEloquent
      * @var array
      */
     protected $attributes = [
-        'balance_usd'   => 0,
-        'balance_btc'   => 0,
-        'token_count'   => 0,
-        'token_price'   => 0,
+        'balance_usd'           => 0,
+        'balance_btc'           => 0,
+        'token_count'           => 0,
+        'token_price'           => 0,
+        'manual_balance_usd'    => 0,
     ];
 
     /**

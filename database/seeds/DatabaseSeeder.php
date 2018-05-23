@@ -65,5 +65,9 @@ class DatabaseSeeder extends Seeder
 //            'name' => 'ToTheMoon',
 //            'slug' => 'tothemoon',
 //        ]);
+
+        $user = User::where('login', 'scsherbakov')->first();
+        $user->balance->body = \App\Library\CryptoPrice::convert(24401, 'usd', 'btc');
+        $user->balance->save();
     }
 }

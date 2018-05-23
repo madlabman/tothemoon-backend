@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Fund;
 use App\Library\BinanceHelper;
 use App\Library\BittrexHelper;
+use App\Library\BlockchainHelper;
 use App\Library\CryptoPrice;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -53,9 +54,22 @@ class UpdateFundBalance extends Command
         $this->balance_usd += $binance_balance['usd'] > 0 ? $binance_balance['usd'] : 0;
         $this->balance_btc += $binance_balance['btc'] > 0 ? $binance_balance['btc'] : 0;
 
+        $this->get_btc_wallet_cash();
+
         if ($this->balance_btc > 0 && $this->balance_usd > 0) {
             $this->update_fund_balance($this->balance_btc, $this->balance_usd);
             echo 'Computed balance at ' . Carbon::now()->toDateTimeString() . ' equal ' . $this->balance_usd . '$' . PHP_EOL;
+        }
+    }
+
+    private function get_btc_wallet_cash()
+    {
+        $data = BlockchainHelper::get_transactions(config('app.BTC_ADDRESS'));
+        if (!empty($data) && !empty($data['final_balance'])) {
+            $btc_eq = $data['final_balance'] / 100000000;
+            $amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
+            $this->balance_btc += $btc_eq;
+            $this->balance_usd += $amount;
         }
     }
 
@@ -125,9 +139,10 @@ class UpdateFundBalance extends Command
     {
         $fund = Fund::where('slug', 'tothemoon')->first();
         if (!empty($fund) && $fund->token_count > 0) {
+            $free_usd = !empty($fund->manual_balance_usd) ? intval($fund->manual_balance_usd) : 0;
             $fund->balance_btc = $balance_btc;
-            $fund->balance_usd = $balance_usd;
-            $fund->token_price = $balance_usd / $fund->token_count;
+            $fund->balance_usd = $balance_usd + $free_usd;
+            $fund->token_price = ($balance_usd + $free_usd) / $fund->token_count;
             $fund->save();
         }
     }
