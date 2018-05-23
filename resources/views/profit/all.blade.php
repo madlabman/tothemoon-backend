@@ -18,7 +18,7 @@
                         {{ $profit->created_at->formatLocalized('%d / %m / %Y') }}
                     </h3>
                     <p>
-                        <span class="uk-text-large">{{ $profit->amount }} BTC</span>
+                        <span class="uk-text-large">{{ round($profit->btc_change, 4) }} BTC</span>
                     </p>
                     <div>
                         <a href="{{ url('/profit/edit/' . $profit->id) }}" class="uk-button uk-button-primary uk-button-small">Редактировать</a>
