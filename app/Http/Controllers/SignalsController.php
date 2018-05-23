@@ -37,11 +37,14 @@ class SignalsController extends Controller
     {
         return $request->validate([
             'level' => 'required|numeric',
-            'info' => 'required|string'
+            'info' => 'required|string',
+            'is_private' => 'required|boolean'
         ], [
             'level.required' => 'Уровень сигнала обязателен',
             'level.numeric' => 'Неверный формат уровня',
             'info.required' => 'Описание обязательно',
+            'is_private.required'    => 'Не установлен тип приватности',
+            'is_private.boolean'    => 'Неверный формат типа приватности',
         ]);
     }
 
