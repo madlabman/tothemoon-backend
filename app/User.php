@@ -125,7 +125,10 @@ class User extends NeoEloquent implements
             }
         }
 
-        return Signal::whereIn('level', array_values($levels))->where('created_at', '<', 's_a_expired_at')->get();
+        return Signal::whereIn('level', array_values($levels))
+            ->where('created_at', '<', 's_a_expired_at')
+            ->orWhere('is_private', false)
+            ->get();
     }
 
     public function incomingMessages()

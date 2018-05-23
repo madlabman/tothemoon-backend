@@ -61,6 +61,7 @@ class SignalsController extends Controller
             $signal = Signal::find($id);
             if (!empty($signal)) {
                 $data['level'] = intval($data['level']);
+                $data['is_private'] = (boolean)$data['is_private'];
                 $signal->update($data);
             }
         }

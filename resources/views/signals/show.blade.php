@@ -24,14 +24,15 @@
                 <div class="uk-margin">
                     <label>
                         <input type="checkbox" name="" @if (!empty($signal) && $signal->is_private) checked @endif class="uk-checkbox"
-                               onchange="if (this.checked) { document.getElementById('is_checked_input').value = 1; }"> {{ __('Приватный') }}
-                        <input type="hidden" name="is_private" value=0 id="is_checked_input">
+                               onchange="document.getElementById('is_checked_input').value = +this.checked;"> {{ __('Приватный') }}
+                        <input type="hidden" name="is_private" value=@if (!empty($signal)) {{ intval($signal->is_private) }} @endif id="is_checked_input">
                     </label>
                 </div>
                 @if ($errors->has('is_private'))
                     <div>
-                        <span class="uk-alert-danger" uk-alert></span>
-                        <strong>{{ $errors->first('is_private') }}</strong>
+                        <span class="uk-alert-danger" uk-alert>
+                            <strong>{{ $errors->first('is_private') }}</strong>
+                        </span>
                     </div>
                 @endif
 
