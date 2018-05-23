@@ -8,6 +8,9 @@
                 от {{ $profit->created_at->formatLocalized('%d / %m / %Y') }}
             @endif
         </h2>
+        @if (!empty($profit))
+            <p class="uk-text-center">Цена токена: {{ round($profit->token_price, 4) }} $</p>
+        @endif
         <div class="uk-text-center">
             @if (!empty($profit))
                 <div class="ml-auto">

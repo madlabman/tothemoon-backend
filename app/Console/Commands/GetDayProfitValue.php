@@ -52,7 +52,7 @@ class GetDayProfitValue extends Command
                     $last_profit->created_at->month,
                     $last_profit->created_at->day
                 );
-//                if ($today == $last_profit_day) exit;
+                if ($today == $last_profit_day) exit;
                 // Getting balance diff
                 $current_price = $fund->token_price;
                 $last_price = $last_profit->token_price;
