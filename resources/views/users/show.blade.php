@@ -68,6 +68,22 @@
                     @endif
                 </div>
 
+                <div class="uk-margin">
+                    <label class="uk-form-label">Доступ к сигналам</label>
+                    <div class="uk-form-controls">
+                        <select name="signal_access" id="level" class="uk-select" required>
+                            <option value="1" {{ $user->signal_access == 1 ? 'selected' : '' }}>Красный</option>
+                            <option value="2" {{ $user->signal_access == 2 ? 'selected' : '' }}>Желтый</option>
+                            <option value="4" {{ $user->signal_access == 4 ? 'selected' : '' }}>Зеленый</option>
+                        </select>
+                    </div>
+                    @if ($errors->has('signal_access'))
+                        <div class="uk-alert-danger" uk-alert>
+                            <strong>{{ $errors->first('signal_access') }}</strong>
+                        </div>
+                    @endif
+                </div>
+
             </fieldset>
 
             <button type="submit" class="uk-button uk-button-primary">
