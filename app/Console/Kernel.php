@@ -28,6 +28,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->command('tothemoon:checkBTC')->everyMinute();
+        $schedule->command('tothemoon:balance')->dailyAt('00:01');
+        $schedule->command('tothemoon:profit')->dailyAt('01:00');
     }
 
     /**
