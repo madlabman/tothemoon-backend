@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
 class RegisterFormRequest extends BaseAPIRequest
@@ -27,10 +26,11 @@ class RegisterFormRequest extends BaseAPIRequest
     public function rules()
     {
         return [
-            'username'  => 'required|string',
+            'login'  => 'required|string|unique:User',
             'password'  => 'required|string|min:6',
             'name'      => 'required',
-            'phone'     => 'required|regex:/^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/',
+            'phone'     => 'required|regex:/^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/|unique:User',
+            'email'     => 'required|email'
         ];
     }
 
@@ -42,14 +42,22 @@ class RegisterFormRequest extends BaseAPIRequest
     public function messages()
     {
         return [
-            'username.required'     => 'Логин обязателен',
+            //
+            'login.unique'          => 'Логин занят',
+            'phone.unique'          => 'Пользователь с таким номером уже зарегистрирован',
+            //
+            'login.required'        => 'Логин обязателен',
             'password.required'     => 'Пароль обязателен',
             'name.required'         => 'Имя обязательно',
             'phone.required'        => 'Телефон обязателен',
+            'email.required'        => 'Почтовый адрес обязателен',
             //
             'password.min'          => 'Минимальная длина 6 символов',
             //
             'phone.regex'           => 'Введите номер телефона в формате +79001234567',
+            //
+            'email.email'           => 'Введите корректный адрес',
+            'login.userunique'      => 'Введите цйвцц',
         ];
     }
 

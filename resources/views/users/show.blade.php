@@ -57,6 +57,18 @@
                 </div>
 
                 <div class="uk-margin">
+                    <label class="uk-form-label">Email</label>
+                    <div class="uk-form-controls">
+                        <input type="text" name="email" class="uk-input" value="@if (!empty($user)){{ $user->email }}@endif">
+                    </div>
+                    @if ($errors->has('email'))
+                        <div class="uk-alert-danger" uk-alert>
+                            <strong>{{ $errors->first('email') }}</strong>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="uk-margin">
                     <label class="uk-form-label">Уровень</label>
                     <div class="uk-form-controls">
                         <input type="number" min="1" max="5" name="invest_level" class="uk-input" value="@if (!empty($user)){{ $user->invest_level }}@endif">

@@ -71,9 +71,10 @@ class AuthController extends Controller
             $user = new User();
             $user->uuid = Uuid::uuid1();
             $user->name = $request->post('name');
-            $user->login = $request->post('username');
+            $user->login = $request->post('login');
             $user->phone = $request->post('phone');
             $user->password = bcrypt($request->post('password'));
+            $user->email = $request->post('email');
 
             // Generate promo_code
             do {

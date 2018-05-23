@@ -33,7 +33,7 @@ class UpdateUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'login.required'     => 'Логин обязателен',
+            'login.required'        => 'Логин обязателен',
             'name.required'         => 'Имя обязательно',
             'phone.required'        => 'Телефон обязателен',
         ];
