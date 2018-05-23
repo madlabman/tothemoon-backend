@@ -59,4 +59,12 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/delete/{id}', 'UsersController@delete');
     });
 
+    Route::prefix('fund')->group(function () {
+        Route::get('/', function () {
+            return view('fund.show', [
+                'fund'  => \App\Fund::where('slug', 'tothemoon')->first(),
+            ]);
+        })->name('fund');
+    });
+
 });
