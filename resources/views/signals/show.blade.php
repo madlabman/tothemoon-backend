@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="uk-container uk-padding">
-        <form action="{{ $_SERVER['PHP_SELF'] }}" class="uk-form-horizontal uk-width-1-2 uk-align-center" method="post">
+        <form action="" class="uk-form-horizontal uk-width-1-2 uk-align-center" method="post">
             @csrf
             <fieldset class="uk-fieldset">
 
