@@ -18,7 +18,8 @@
                         {{ $profit->created_at->formatLocalized('%d / %m / %Y') }}
                     </h3>
                     <p>
-                        <span class="uk-text-large">{{ round($profit->btc_change, 4) }} BTC</span>
+                        <span class="uk-text-large">{{ round($profit->token_change * 100, 2) }}%</span><br>
+                        <span class="uk-text-small">Цена токена: <em>{{ round($profit->token_price, 4) }} $</em></span>
                     </p>
                     <div>
                         <a href="{{ url('/profit/edit/' . $profit->id) }}" class="uk-button uk-button-primary uk-button-small">Редактировать</a>

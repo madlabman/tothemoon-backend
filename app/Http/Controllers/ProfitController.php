@@ -41,10 +41,10 @@ class ProfitController extends Controller
     public function validateSignalRequest(Request $request)
     {
         \Validator::make($request->all(),[
-            'amount' => 'required|numeric',
+            'usd_change' => 'required|numeric',
         ], [
-            'amount.required' => 'Сумма обязательна',
-            'amount.numeric' => 'Неверный формат суммы',
+            'usd_change.required' => 'Сумма обязательна',
+            'usd_change.numeric' => 'Неверный формат суммы',
         ])->validate();
 
 //        return $request->validate([
@@ -88,7 +88,7 @@ class ProfitController extends Controller
 
         $profit = Profit::find($id);
         if (!empty($profit)) {
-            $profit->amount = $request->post('amount');
+            $profit->usd_change = $request->post('usd_change');
             $profit->save();
             $request->session()->flash('status', 'Сумма обновлена!');
         }

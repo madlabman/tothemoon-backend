@@ -25,13 +25,13 @@
             <fieldset class="uk-fieldset">
 
                 <div class="uk-margin">
-                    <label class="uk-form-label">Сумма</label>
+                    <label class="uk-form-label">Сумма, USD</label>
                     <div class="uk-form-controls">
-                        <input type="number" step="any" value="@if (!empty($profit)){{ $profit->amount }}@endif" name="amount" id="amount" class="uk-input">
+                        <input type="number" step="any" value="@if (!empty($profit)){{ $profit->usd_change }}@endif" name="usd_change" id="amount" class="uk-input">
                     </div>
-                    @if ($errors->has('amount'))
+                    @if ($errors->has('usd_change'))
                         <div class="uk-alert-danger" uk-alert>
-                            <strong>{{ $errors->first('amount') }}</strong>
+                            <strong>{{ $errors->first('usd_change') }}</strong>
                         </div>
                     @endif
                 </div>
