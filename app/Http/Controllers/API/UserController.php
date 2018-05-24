@@ -110,10 +110,13 @@ class UserController extends Controller
         try {
             return response()->json([
                 'status' => 'success',
-                'ref_count' => count(auth()->user()->referrals)
+                'ref_count' => count(auth()->user()->referrals),
+                'referrals' => auth()->user()->referrals->pluck('name'),
             ]);
         } catch (\Exception $ex) {
-            return response()->json([], 500);
+            return response()->json([
+                'ex' => $ex->getMessage(),
+            ], 500);
         }
     }
 
