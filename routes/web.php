@@ -65,6 +65,7 @@ Route::group(['middleware' => ['auth']], function() {
                 'fund'  => \App\Fund::where('slug', 'tothemoon')->first(),
             ]);
         })->name('fund');
+        Route::post('/', 'FundController@update');
         Route::post('/{fund_id}/manual-usd', 'FundController@manual_usd');
     });
 
