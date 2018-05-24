@@ -1,6 +1,7 @@
 <?php
 
 use App\Balance;
+use App\Library\PromoCode;
 use App\Message;
 use App\Signal;
 use App\User;
@@ -66,44 +67,52 @@ class DatabaseSeeder extends Seeder
 //            'slug' => 'tothemoon',
 //        ]);
 
-        $user = User::where('login', 'cherkasov')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(1831, 'usd', 'btc');
-        $user->balance->save();
+//        $user = User::where('login', 'cherkasov')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(1831, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'lopatin')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(269, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'yastrebov')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(1492, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'kuznetsov')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(2544, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'platonov')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(1896, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'potapova')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(1665, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'malyshev')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(475, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'berezin')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(2371, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'savanin')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(10975, 'usd', 'btc');
+//        $user->balance->save();
+//
+//        $user = User::where('login', 'tretyak')->first();
+//        $user->balance->body = \App\Library\CryptoPrice::convert(918, 'usd', 'btc');
+//        $user->balance->save();
 
-        $user = User::where('login', 'lopatin')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(269, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'yastrebov')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(1492, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'kuznetsov')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(2544, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'platonov')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(1896, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'potapova')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(1665, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'malyshev')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(475, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'berezin')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(2371, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'savanin')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(10975, 'usd', 'btc');
-        $user->balance->save();
-
-        $user = User::where('login', 'tretyak')->first();
-        $user->balance->body = \App\Library\CryptoPrice::convert(918, 'usd', 'btc');
-        $user->balance->save();
+//        foreach (User::all() as $user) {
+//            do {
+//                $promo_code = PromoCode::generate(8);
+//            } while (User::where('promo_code', $promo_code)->first() !== null);
+//            $user->promo_code = $promo_code;
+//            $user->save();
+//        }
     }
 }
