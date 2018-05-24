@@ -16,6 +16,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/login', 'API\AuthController@login');
         Route::post('/register', 'API\AuthController@register');
+        Route::post('/promo', 'API\AuthController@promo');
         Route::group(['middleware' => ['jwt.auth']], function () {
             Route::get('/logout', 'API\AuthController@logout');
             Route::get('/refresh', 'API\AuthController@refresh');

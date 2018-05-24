@@ -130,4 +130,26 @@ class AuthController extends Controller
             'message'   => 'Successfully logged out'
         ]);
     }
+
+    /**
+     * Check existence of promo code in database
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function promo(Request $request)
+    {
+        if (!empty($promo = $request->post('promo'))) {
+            if (!empty(User::where('promo_code', $promo)->first())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'promo'     => $promo,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => 'error',
+        ]);
+    }
 }
