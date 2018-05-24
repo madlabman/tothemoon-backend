@@ -7,12 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginFormRequest;
 use App\Http\Requests\RegisterFormRequest;
 use App\Library\PromoCode;
+use App\Mail\EmailVerify;
 use App\Repository\UserRepository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 use Ramsey\Uuid\Uuid;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -41,6 +43,18 @@ class AuthController extends Controller
                 'status'    => 'error',
                 'error'     => 'Ошибка входа, повторите позднее.',
             ], 500);
+        }
+
+        if (empty(auth()->user()->email_verified)) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => [
+                    'password' => [
+                        'Подтвердите адрес электронной почты'
+                    ]
+                ],
+                'msg' => 'Invalid Credentials.'
+            ]);
         }
 
 //        Redis::set(auth()->user()->getAuthIdentifier(), $token);
@@ -82,8 +96,13 @@ class AuthController extends Controller
             } while (User::where('promo_code', $promo_code)->first() !== null);
             $user->promo_code = $promo_code;
 
+            $user->email_verified = false;
+            $user->email_token = Uuid::uuid1();
             // Save user
             $user->save();
+
+            // Send email
+            Mail::to($user)->send(new EmailVerify($user->email_token));
 
             // Check promo
             if (!empty($promo = $request->post('promo'))) {
@@ -144,6 +163,31 @@ class AuthController extends Controller
                 return response()->json([
                     'status'    => 'success',
                     'promo'     => $promo,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => 'error',
+        ]);
+    }
+
+    /**
+     * Validate email token
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verify(Request $request)
+    {
+        if (!empty($token = $request->post('token'))) {
+            if (!empty($user = User::where('email_token', $token)->first())) {
+                $user->email_token = null;
+                $user->email_verified = true;
+                $user->save();
+                return response()->json([
+                    'status'    => 'success',
+                    'msg'       => 'Почта подтверждена! Войдите.',
                 ]);
             }
         }
