@@ -53,6 +53,32 @@
                     @endif
                 </div>
 
+                <div class="uk-margin">
+                    <label class="uk-form-label">Дополнительные BTC</label>
+                    <div class="uk-form-controls">
+                        <input type="number" step="any" value="@if (!empty($fund)){{ $fund->manual_balance_btc }}@endif"
+                               name="manual_balance_btc" id="amount" class="uk-input">
+                    </div>
+                    @if ($errors->has('manual_balance_btc'))
+                        <div class="uk-alert-danger" uk-alert>
+                            <strong>{{ $errors->first('manual_balance_btc') }}</strong>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label">Дополнительные ETH</label>
+                    <div class="uk-form-controls">
+                        <input type="number" step="any" value="@if (!empty($fund)){{ $fund->manual_balance_eth }}@endif"
+                               name="manual_balance_eth" id="amount" class="uk-input">
+                    </div>
+                    @if ($errors->has('manual_balance_eth'))
+                        <div class="uk-alert-danger" uk-alert>
+                            <strong>{{ $errors->first('manual_balance_eth') }}</strong>
+                        </div>
+                    @endif
+                </div>
+
             </fieldset>
 
             <button type="submit" class="uk-button uk-button-primary">Обновить</button>

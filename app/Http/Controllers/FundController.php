@@ -20,7 +20,9 @@ class FundController extends Controller
         return $request->validate([
             'token_count'           => 'required|numeric',
             'token_price'           => 'required|numeric',
-            'manual_balance_usd'    => 'required|numeric'
+            'manual_balance_usd'    => 'required|numeric',
+            'manual_balance_btc'    => 'required|numeric',
+            'manual_balance_eth'    => 'required|numeric',
         ], [
             'required'  => 'Поле обязательно',
             'numeric'   => 'Неверный формат',
@@ -32,7 +34,6 @@ class FundController extends Controller
         if ($data = $this->validateFundRequest($request)) {
             $fund = Fund::where('slug', 'tothemoon')->first();
             if (!empty($fund)) {
-                $data['token_count'] = intval($data['token_count']);
                 $fund->update($data);
             }
         }

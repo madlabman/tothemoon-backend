@@ -139,7 +139,11 @@ class UpdateFundBalance extends Command
     {
         $fund = Fund::where('slug', 'tothemoon')->first();
         if (!empty($fund) && $fund->token_count > 0) {
-            $free_usd = !empty($fund->manual_balance_usd) ? intval($fund->manual_balance_usd) : 0;
+            // Calculate manually added amounts
+            $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;
+            $free_usd += !empty($fund->manual_balance_btc) ? CryptoPrice::convert($fund->manual_balance_btc, 'btc', 'usd') : 0;
+            $free_usd += !empty($fund->manual_balance_eth) ? CryptoPrice::convert(BinanceHelper::convert_to_btc($fund->manual_balance_eth, 'ETH'), 'btc', 'usd') : 0;
+            // Save balance
             $fund->balance_btc = $balance_btc;
             $fund->balance_usd = $balance_usd + $free_usd;
             $fund->token_price = ($balance_usd + $free_usd) / $fund->token_count;
