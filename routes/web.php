@@ -60,11 +60,7 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
     Route::prefix('fund')->group(function () {
-        Route::get('/', function () {
-            return view('fund.show', [
-                'fund'  => \App\Fund::where('slug', 'tothemoon')->first(),
-            ]);
-        })->name('fund');
+        Route::get('/', 'FundController@index')->name('fund');
         Route::post('/', 'FundController@update');
         Route::post('/{fund_id}/manual-usd', 'FundController@manual_usd');
     });

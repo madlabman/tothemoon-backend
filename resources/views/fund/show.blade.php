@@ -79,6 +79,18 @@
                     @endif
                 </div>
 
+                <div class="uk-margin">
+                    <h3>Уровни инвестирования</h3>
+                    @foreach($levels as $level)
+                        <div class="uk-text-small">
+                            <p><b>{{ $level->title }}:</b>
+                                <em>{{ $level->min_duration }} - {{ $level->max_duration }}</em> месяцев &
+                                <em>{{ $level->min_usd_amount }} - {{ $level->max_usd_amount }}</em> долларов
+                            </p>
+                        </div>
+                    @endforeach
+                </div>
+
             </fieldset>
 
             <button type="submit" class="uk-button uk-button-primary">Обновить</button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Fund;
+use App\LevelCondition;
 use Illuminate\Http\Request;
 
 class FundController extends Controller
@@ -13,6 +14,16 @@ class FundController extends Controller
         $fund->manual_balance_usd = $request->post('manual_balance_usd');
         $fund->save();
         return redirect()->back();
+    }
+
+    public function index()
+    {
+        $fund = Fund::where('slug', '=', 'tothemoon')->first();
+        if (empty($fund)) app()->abort(404);
+        return view('fund.show')->with([
+            'fund'      => $fund,
+            'levels'    => LevelCondition::orderBy('min_usd_amount')->orderBy('max_duration')->get(),
+        ]);
     }
 
     public function validateFundRequest(Request $request)

@@ -39,7 +39,7 @@ class UsersController extends Controller
     {
         $user = User::find($id);
         if (empty($user)) return app()->abort(404);
-        $levels = LevelCondition::orderBy('title')->get();
+        $levels = LevelCondition::orderBy('min_usd_amount')->orderBy('max_duration')->get();
         return view('users.show')->with([
             'user'      => $user,
             'levels'    => $levels,
