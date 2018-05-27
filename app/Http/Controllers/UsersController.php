@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
+use App\LevelCondition;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -38,7 +39,11 @@ class UsersController extends Controller
     {
         $user = User::find($id);
         if (empty($user)) return app()->abort(404);
-        return view('users.show')->with(compact('user'));
+        $levels = LevelCondition::orderBy('title')->get();
+        return view('users.show')->with([
+            'user'      => $user,
+            'levels'    => $levels,
+        ]);
     }
 
     public function delete($id)

@@ -2,11 +2,13 @@
 
 namespace App;
 
+use App\Library\CryptoPrice;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Vinelab\NeoEloquent\Eloquent\Model as NeoEloquent;
 use Vinelab\NeoEloquent\Eloquent\Relations\HasMany;
@@ -163,5 +165,34 @@ class User extends NeoEloquent implements
         return [];
     }
 
+    /*
+     *
+     * Additional methods
+     *
+     */
 
+    public function calculateLevel()
+    {
+        $invest_level = null;
+        $duration = Carbon::now()->diffInMonths($this->invested_at);
+        if ($duration > 0) {
+            $amount = CryptoPrice::convert($this->balance->body, 'btc', 'usd');
+            if ($amount > 0) {
+                // Find variant
+                $condition = LevelCondition::where('min_usd_amount', '<=', $amount)
+                    ->where('max_usd_amount', '>', $amount)
+                    ->where('min_duration', '<=', $duration)
+                    ->where('max_duration', '>', $duration)
+                    ->orderBy('max_duration', 'desc')
+                    ->orderBy('max_usd_amount', 'desc')
+                    ->first();
+                if (!empty($condition)) {
+                    $invest_level = $condition->id;
+                }
+            }
+        }
+
+        $this->invest_level = $invest_level;
+        $this->save();
+    }
 }
