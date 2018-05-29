@@ -16,6 +16,7 @@ class Balance extends NeoEloquent
     protected $fillable = [
         'body',
         'bonus',
+        'token',
     ];
 
     /**
@@ -26,6 +27,7 @@ class Balance extends NeoEloquent
     protected $attributes = [
         'body'  => 0.0,
         'bonus' => 0.0,
+        'token' => 0.0,
     ];
 
     /**
