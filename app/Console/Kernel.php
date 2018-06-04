@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('tothemoon:checkBTC')->everyMinute();
+        $schedule->command('tothemoon:checkBTC')->everyTenMinutes();
         $schedule->command('tothemoon:balance')->everyTenMinutes();
         $schedule->command('tothemoon:profit')->dailyAt('01:00');
     }
