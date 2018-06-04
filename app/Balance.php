@@ -17,6 +17,7 @@ class Balance extends NeoEloquent
         'body',
         'bonus',
         'token',
+        'primary_usd',
     ];
 
     /**
@@ -25,9 +26,10 @@ class Balance extends NeoEloquent
      * @var array
      */
     protected $attributes = [
-        'body'  => 0.0,
-        'bonus' => 0.0,
-        'token' => 0.0,
+        'body'          => 0.0,
+        'bonus'         => 0.0,
+        'token'         => 0.0,
+        'primary_usd'   => 0.0,
     ];
 
     /**

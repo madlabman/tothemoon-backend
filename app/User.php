@@ -36,6 +36,8 @@ class User extends NeoEloquent implements
         'email',
         'invest_level',
         'signal_access',
+        'invested_at',
+        'last_accounted_at',
     ];
 
     /**

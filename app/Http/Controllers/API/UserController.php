@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Fund;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Library\CryptoPrice;
@@ -40,8 +41,12 @@ class UserController extends Controller
     {
         try {
             if (!empty(auth()->user()->balance)) {
-                $btc = round( auth()->user()->balance->body, 3 );
-                $usd = round(CryptoPrice::convert($btc, 'btc', 'usd'), 2);
+                $fund = Fund::where('slug', 'tothemoon')->first();
+                if (empty($fund)) throw new \Exception('Fund doesn\'t exist');
+
+                $tkn = auth()->user()->balance->body;
+                $usd = round($tkn * $fund->token_price, 2);
+                $btc = round(CryptoPrice::convert($usd, 'usd', 'btc'), 3);
                 $rub = round(CryptoPrice::convert($btc, 'btc', 'rub'), 2);
 
                 return response()->json([
@@ -59,7 +64,6 @@ class UserController extends Controller
             return response()->json([
                 'status' => 'error',
                 'balance' => null,
-                'error' => $ex->getMessage(),
             ], 500);
         }
 
