@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Coin;
 use App\Fund;
 use App\LevelCondition;
 use Illuminate\Http\Request;
@@ -22,7 +23,6 @@ class FundController extends Controller
         if (empty($fund)) app()->abort(404);
         return view('fund.show')->with([
             'fund'      => $fund,
-            'levels'    => LevelCondition::orderBy('min_usd_amount')->orderBy('max_duration')->get(),
         ]);
     }
 
@@ -32,11 +32,11 @@ class FundController extends Controller
             'token_count'           => 'required|numeric',
             'token_price'           => 'required|numeric',
             'manual_balance_usd'    => 'required|numeric',
-            'manual_balance_btc'    => 'required|numeric',
-            'manual_balance_eth'    => 'required|numeric',
+            'coin'                  => 'required|array',
         ], [
             'required'  => 'Поле обязательно',
             'numeric'   => 'Неверный формат',
+            'array'     => null,
         ]);
     }
 
@@ -46,6 +46,18 @@ class FundController extends Controller
             $fund = Fund::where('slug', 'tothemoon')->first();
             if (!empty($fund)) {
                 $fund->update($data);
+                foreach ($data['coin'] as $sym => $amount) {
+                    $db_coin = $fund->coins()->where('sym', $sym)->first();
+                    if (!empty($db_coin)) {
+                        $db_coin->update(compact('amount'));
+                    } else {
+                        $db_coin = Coin::create([
+                            'sym'       => $sym,
+                            'amount'    => $amount,
+                        ]);
+                        $fund->coins()->save($db_coin);
+                    }
+                }
             }
         }
         $request->session()->flash('status', 'Фонд обновлен!');

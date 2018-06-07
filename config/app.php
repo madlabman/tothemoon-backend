@@ -212,11 +212,14 @@ return [
     ],
 
     'BTC_ADDRESS' => env('BTC_ADDRESS', null),
+    'ETH_ADDRESS' => env('ETH_ADDRESS', null),
 
     'bittrex_key' => env('BITTREX_KEY', null),
     'bittrex_secret' => env('BITTREX_SECRET', null),
 
     'binance_key' => env('BINANCE_KEY', null),
     'binance_secret' => env('BINANCE_SECRET', null),
+
+    'etherscan_key' => env('ETHERSCAN_KEY', null),
 
 ];

@@ -21,8 +21,6 @@ class Fund extends NeoEloquent
         'token_count',
         'token_price',
         'manual_balance_usd',
-        'manual_balance_btc',
-        'manual_balance_eth',
     ];
 
     /**
@@ -36,8 +34,6 @@ class Fund extends NeoEloquent
         'token_count'           => 0,
         'token_price'           => 0,
         'manual_balance_usd'    => 0,
-        'manual_balance_btc'    => 0,
-        'manual_balance_eth'    => 0,
     ];
 
     /**
@@ -59,5 +55,10 @@ class Fund extends NeoEloquent
     public function profits()
     {
         return $this->hasMany(Profit::class, 'PROFIT');
+    }
+
+    public function coins()
+    {
+        return $this->hasMany(Coin::class, 'HAS_COIN');
     }
 }
