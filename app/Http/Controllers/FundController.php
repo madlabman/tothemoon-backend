@@ -52,7 +52,7 @@ class FundController extends Controller
                         $db_coin->update(compact('amount'));
                     } else {
                         $db_coin = Coin::create([
-                            'sym'       => $sym,
+                            'symbol'    => $sym,
                             'amount'    => $amount,
                         ]);
                         $fund->coins()->save($db_coin);

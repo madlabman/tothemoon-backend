@@ -72,7 +72,7 @@ class UpdateFundBalance extends Command
             $coins_price = 0;
             foreach ($fund->coins as $coin) {
                 if ($coin->amount > 0) {
-                    $coins_price += $coin->amount * CoinMarketCapHelper::price($coin->sym);
+                    $coins_price += $coin->amount * CoinMarketCapHelper::price($coin->symbol);
                 }
             }
             echo 'Manual added coins value equal to ' . $coins_price . '$' . PHP_EOL;

@@ -9,44 +9,39 @@
 namespace App\Library;
 
 
+use App\CryptoCurrency;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Cache;
 
 class CoinMarketCapHelper
 {
-    private static function update()
+
+    private static function get_price($symbol)
     {
         try {
-            $client = new \GuzzleHttp\Client();
-            $res = $client->request('GET', 'https://api.coinmarketcap.com/v2/listings/');
-            $status = $res->getStatusCode();
-            if ($status == 200) {
-                $ticker = $res->getBody();
-                $ticker = json_decode($ticker, true);
-                foreach ($ticker['data'] as $symbol) {
-                    Cache::add(mb_strtolower($symbol['symbol']), self::get_price_by_id($symbol['id']), 25);
+            $coin = CryptoCurrency::where('symbol', $symbol)->first();
+            if (!empty($coin)) {
+                $client = new \GuzzleHttp\Client();
+                $res = $client->request('GET', 'https://api.coinmarketcap.com/v2/ticker/' . $coin->market_id);
+                $status = $res->getStatusCode();
+                if ($status == 200) {
+                    $ticker = $res->getBody();
+                    $ticker = json_decode($ticker, true);
+
+                    if (!empty($ticker['data'])) {
+                        $price = $ticker['data']['quotes']['USD']['price'];
+                        // Save to cache
+                        Cache::add($symbol, $price, 30);
+                        $coin->stored_price = $price;
+                        $coin->save();
+
+                        return $price;
+                    }
                 }
             }
         } catch (GuzzleException $ex) {
-            //
-        }
-    }
-
-    private static function get_price_by_id($id)
-    {
-        try {
-            $client = new \GuzzleHttp\Client();
-            $res = $client->request('GET', 'https://api.coinmarketcap.com/v2/ticker/' . $id);
-            $status = $res->getStatusCode();
-            if ($status == 200) {
-                $ticker = $res->getBody();
-                $ticker = json_decode($ticker, true);
-
-                if (!empty($ticker['data']))
-                    return $ticker['data']['quotes']['USD'];
-            }
-        } catch (GuzzleException $ex) {
-            //
+            echo $ex->getMessage();
+            return $coin->stored_price;
         }
 
         return 0;
@@ -55,7 +50,7 @@ class CoinMarketCapHelper
     public static function price($symbol)
     {
         if (!Cache::has($symbol)) {
-            self::update();
+            return self::get_price($symbol);
         }
 
         return Cache::get($symbol, 0);

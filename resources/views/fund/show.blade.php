@@ -13,7 +13,10 @@
             <fieldset class="uk-fieldset">
 
                 <div class="uk-margin">
-                    <p>Баланс фонда, USD: <em>{{ round($fund->balance_usd, 3) }}</em></p>
+                    <p>
+                        Баланс фонда, USD: <em>{{ round($fund->balance_usd, 3) }}</em><br>
+                        <small>Последнее обновление <em>{{ $fund->updated_at }}</em></small>
+                    </p>
                 </div>
 
                 <div class="uk-margin">
@@ -55,11 +58,11 @@
 
                 <div id="coins">
                     @foreach($fund->coins as $coin)
-                        <div class="uk-margin" id="coin-{{ strtolower($coin->sym) }}">
-                            <label class="uk-form-label">Дополнительные {{ strtoupper($coin->sym) }}</label>
+                        <div class="uk-margin" id="coin-{{ $coin->symbol }}">
+                            <label class="uk-form-label">Дополнительные {{ strtoupper($coin->symbol) }}</label>
                             <div class="uk-form-controls">
                                 <input type="number" step="any" value="{{ $coin->amount }}"
-                                       name="coin[{{ $coin->sym  }}]" class="uk-input">
+                                       name="coin[{{ $coin->symbol  }}]" class="uk-input">
                             </div>
                         </div>
                     @endforeach
@@ -70,34 +73,14 @@
                     <label class="uk-form-label">Добавить монеты</label>
                     <div class="uk-form-controls">
                         <select id="coin-select" class="uk-select">
-                            <option id="coin-select-loading">Загрузка...</option>
+                            <option>Выберите монету</option>
+                            @foreach(\App\CryptoCurrency::all()->sortBy('name') as $coin)
+                                <option value="{{ $coin->symbol }}">{{ $coin->name }}</option>
+                            @endforeach
                         </select>
                         <script>
                             $(document).ready(function () {
                                 const $select = $('#coin-select');
-                                // return;
-                                // Getting coins symbols from API
-                                $.ajax({
-                                    type: 'GET',
-                                    url: 'https://api.coinmarketcap.com/v2/listings/',
-                                    dataType: 'json',
-                                    success: function (response) {
-                                        $('#coin-select-loading').remove();
-                                        $('<option>', {
-                                            value: '',
-                                            text: 'Выберите монету',
-                                        }).appendTo($select);
-                                        $.each(response.data, function (i, item) {
-                                            // Insert symbols to select
-                                            $('<option>', {
-                                                value: item.symbol.toLowerCase(),
-                                                text: item.name,
-                                            }).appendTo($select);
-                                            // console.log(item.symbol.toLowerCase());
-                                            // console.log(item.name);
-                                        })
-                                    }
-                                });
                                 // Assign symbols with existent values
                                 $select.on('change', function () {
                                     let $symbol = $(this).find('option:selected').val();

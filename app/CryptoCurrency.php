@@ -4,9 +4,9 @@ namespace App;
 
 use Vinelab\NeoEloquent\Eloquent\Model as NeoEloquent;
 
-class Coin extends NeoEloquent
+class CryptoCurrency extends NeoEloquent
 {
-    protected $label = 'Coin';
+    protected $label = 'CryptoCurrency';
 
     /**
      * The attributes that are mass assignable.
@@ -14,8 +14,10 @@ class Coin extends NeoEloquent
      * @var array
      */
     protected $fillable = [
+        'name',
         'symbol',
-        'amount',
+        'market_id',
+        'stored_price',
     ];
 
     /**
@@ -24,7 +26,7 @@ class Coin extends NeoEloquent
      * @var array
      */
     protected $attributes = [
-        'amount'    => 0.0,
+        'stored_price'  => 0,
     ];
 
     /**
@@ -36,18 +38,4 @@ class Coin extends NeoEloquent
         'created_at',
         'updated_at',
     ];
-
-    /*
-     *
-     * Relations.
-     *
-     */
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function fund()
-    {
-        return $this->belongsTo(Fund::class, 'HAS_COIN');
-    }
 }
