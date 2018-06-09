@@ -57,7 +57,7 @@
                 </div>
 
                 <div id="coins">
-                    @foreach($fund->coins as $coin)
+                    @foreach($fund->coins->sortByDesc('amount') as $coin)
                         <div class="uk-margin" id="coin-{{ $coin->symbol }}">
                             <label class="uk-form-label">Дополнительные {{ strtoupper($coin->symbol) }}</label>
                             <div class="uk-form-controls">
@@ -73,11 +73,16 @@
                     <label class="uk-form-label">Добавить монеты</label>
                     <div class="uk-form-controls">
                         <select id="coin-select" class="uk-select">
-                            <option>Выберите монету</option>
                             @foreach(\App\CryptoCurrency::all()->sortBy('name') as $coin)
                                 <option value="{{ $coin->symbol }}">{{ $coin->name }}</option>
                             @endforeach
                         </select>
+                        <style>
+                            #coin-select option {
+                                padding: 8px;
+                            }
+                        </style>
+                        <script src="{{ asset('js/jquery.select-filter.js') }}"></script>
                         <script>
                             $(document).ready(function () {
                                 const $select = $('#coin-select');
@@ -113,7 +118,15 @@
                                             step: 'any',
                                         }).appendTo($form_control);
                                     }
-                                })
+                                });
+                                // Filter
+                                $select.selectFilter({
+                                    'filterClass': 'uk-input',
+                                    'inputLocation': 'above',
+                                    'minimumSelectElementSize': 5,
+                                    'width': -1,
+                                    'inputPlaceholder': 'Введите название монеты...',
+                                });
                             });
                         </script>
                     </div>
