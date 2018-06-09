@@ -61,8 +61,15 @@
                         <div class="uk-margin" id="coin-{{ $coin->symbol }}">
                             <label class="uk-form-label">Дополнительные {{ strtoupper($coin->symbol) }}</label>
                             <div class="uk-form-controls">
-                                <input type="number" step="any" value="{{ $coin->amount }}"
-                                       name="coin[{{ $coin->symbol  }}]" class="uk-input">
+                                <div uk-grid>
+                                    <div class="uk-width-2-3">
+                                        <input type="number" step="any" value="{{ $coin->amount }}"
+                                                name="coin[{{ $coin->symbol  }}]" class="uk-input">
+                                    </div>
+                                    <div class="uk-width-1-3">
+                                        <button class="uk-button uk-button-danger" style="padding: 0; width: 100%;" data-coin="{{ $coin->symbol }}">Удалить</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -127,6 +134,26 @@
                                     'width': -1,
                                     'inputPlaceholder': 'Введите название монеты...',
                                 });
+
+                                // Delete coin
+                                $('button[data-coin]').click(function (e) {
+                                    e.preventDefault();
+                                    let $symbol = $(this).attr('data-coin');
+                                    let self = $(this);
+                                    // Make request
+                                    $.ajax('/fund/{{ $fund->id }}/delete-coin?symbol=' + $symbol, {
+                                        method: 'GET',
+                                        beforeSend: function () {
+                                            self.html('...');
+                                        },
+                                        success: function () {
+                                            $('#coin-' + $symbol).remove();
+                                        },
+                                        error: function () {
+                                            self.html('Ошибка!');
+                                        }
+                                    })
+                                })
                             });
                         </script>
                     </div>

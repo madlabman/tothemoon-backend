@@ -47,7 +47,7 @@ class FundController extends Controller
             if (!empty($fund)) {
                 $fund->update($data);
                 foreach ($data['coin'] as $sym => $amount) {
-                    $db_coin = $fund->coins()->where('sym', $sym)->first();
+                    $db_coin = $fund->coins()->where('symbol', $sym)->first();
                     if (!empty($db_coin)) {
                         $db_coin->update(compact('amount'));
                     } else {
@@ -62,5 +62,19 @@ class FundController extends Controller
         }
         $request->session()->flash('status', 'Фонд обновлен!');
         return redirect()->to('fund');
+    }
+
+    public function delete_coin($fund_id, Request $request)
+    {
+        /** @var Fund $fund */
+        $fund = Fund::findOrFail($fund_id);
+        $symbol = $request->get('symbol');
+        $coin = $fund->coins()->where('symbol', $symbol)->first();
+        if (!empty($coin)) {
+            $coin->delete();
+            return response()->json([], 200);
+        }
+
+        return response()->json(500);
     }
 }
