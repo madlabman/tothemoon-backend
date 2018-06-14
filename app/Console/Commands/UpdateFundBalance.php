@@ -61,7 +61,7 @@ class UpdateFundBalance extends Command
 
         if ($this->balance_btc > 0 && $this->balance_usd > 0) {
             $this->update_fund_balance($this->balance_btc, $this->balance_usd);
-            echo 'Real balance at ' . Carbon::now()->toDateTimeString() . ' equal to ' . $this->balance_usd . '$' . PHP_EOL;
+            echo 'Real balance at ' . Carbon::now()->toDateTimeString() . ' equal to ' . round($this->balance_usd, 2) . '$' . PHP_EOL;
         }
     }
 
@@ -75,7 +75,7 @@ class UpdateFundBalance extends Command
                     $coins_price += $coin->amount * CoinMarketCapHelper::price($coin->symbol);
                 }
             }
-            echo 'Manual added coins value equal to ' . $coins_price . '$' . PHP_EOL;
+            echo 'Manual added coins value equal to ' . round($coins_price, 2) . '$' . PHP_EOL;
         }
 
         return empty($coins_price) ? 0 : $coins_price;
@@ -90,7 +90,7 @@ class UpdateFundBalance extends Command
             $this->balance_btc += $btc_eq;
             $this->balance_usd += $amount;
             // debug
-            echo 'BTC wallet amount equal to ' . $amount . '$' . PHP_EOL;
+            echo 'BTC wallet amount equal to ' . round($amount, 2) . '$' . PHP_EOL;
         }
     }
 
@@ -103,7 +103,7 @@ class UpdateFundBalance extends Command
             $this->balance_btc += $btc_amount;
             $this->balance_usd += $usd_amount;
             // debug
-            echo 'ETH wallet amount equal to ' . $usd_amount . '$' . PHP_EOL;
+            echo 'ETH wallet amount equal to ' . round($usd_amount, 2) . '$' . PHP_EOL;
         }
     }
 
@@ -177,7 +177,7 @@ class UpdateFundBalance extends Command
             $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;
             $free_usd += $this->calculate_manual_coins();
             // Save balance
-            $fund->balance_btc = $balance_btc;
+            $fund->balance_btc = $balance_btc + CryptoPrice::convert($free_usd, 'usd', 'btc');
             $fund->balance_usd = $balance_usd + $free_usd;
             $fund->token_price = ($balance_usd + $free_usd) / $fund->token_count;
             $fund->save();
