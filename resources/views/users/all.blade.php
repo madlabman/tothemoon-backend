@@ -21,8 +21,8 @@
                     <p>{{ $user->phone }}</p>
                     <p>
                         @if(!empty($user->balance))
-                            Баланс: <em>{{ $user->balance->body }} BTC</em><br>
-                            Бонус: <em>{{ $user->balance->bonus }} BTC</em>
+                            Баланс: <em>{{ round($user->balance->body, 2) }} $</em><br>
+                            Бонус: <em>{{ round($user->balance->bonus, 2) }} $</em>
                         @endif
                     </p>
                     <div>

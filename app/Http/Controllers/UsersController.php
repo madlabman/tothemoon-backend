@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Fund;
 use App\Http\Requests\UpdateUserRequest;
 use App\LevelCondition;
 use App\User;
@@ -29,8 +30,23 @@ class UsersController extends Controller
                 ]);
             }
         }
+
+        $token_in_usd = 0;
+        $fund = Fund::where('slug', 'tothemoon')->first();
+        if (!empty($fund)) $token_in_usd = $fund->token_price;
+
         return view('users.all')->with([
-            'users'     => $users,
+            'users'     => $users->map(function ($user) use ($token_in_usd) {
+                return (object)[
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'balance' => (object)[
+                        'body'  => $user->balance->body * $token_in_usd,
+                        'bonus' => $user->balance->bonus * $token_in_usd,
+                    ],
+                ];
+            })->all(),
             'pages'     => $pages,
         ]);
     }
