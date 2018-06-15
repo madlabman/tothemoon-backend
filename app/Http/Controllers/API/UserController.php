@@ -46,7 +46,7 @@ class UserController extends Controller
 
                 $tkn = auth()->user()->balance->body;
                 $usd = round($tkn * $fund->token_price, 2);
-                $btc = round(CryptoPrice::convert($usd, 'usd', 'btc'), 3);
+                $btc = round(CryptoPrice::convert($usd, 'usd', 'btc'), 5);
                 $rub = round(CryptoPrice::convert($btc, 'btc', 'rub'), 2);
 
                 return response()->json([
