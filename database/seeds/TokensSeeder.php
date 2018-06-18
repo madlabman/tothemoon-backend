@@ -38,12 +38,13 @@ class TokensSeeder extends Seeder
             'tretyak'       => 697.84,
             'scsherbakov'   => 18543.10,
             'spiridonov'    => 11007.78,
-            'kolodyazhniy'  => 4694.31,
-            'mikhailov'     => 7077.10,
+            'kolodyazhniy'  => 2754.63,
+            'mikhailov'     => 5522.86,
             'osipov'        => 18493.24,
-            'bozhkov'       => 8765.56,
+            'bozhkov'       => 8567.84,
         ];
 
+        $fund_token_count = 0;
         foreach ($balance_matrix as $login => $token_count) {
             $user = User::where('login', $login)->first();
             if (!empty($user)) {
@@ -51,7 +52,13 @@ class TokensSeeder extends Seeder
                 $user->balance->body = $token_count;
                 $user->balance->bonus = 0;
                 $user->balance->save();
+                // Accumulate tokens to fund tokens amount
+                $fund_token_count += $token_count;
             }
         }
+
+        // Save amount of tokens according to users balance
+        $this->fund->token_count = $fund_token_count;
+        $this->fund->save();
     }
 }
