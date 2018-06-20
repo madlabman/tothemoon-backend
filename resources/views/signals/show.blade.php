@@ -25,7 +25,10 @@
                     <label>
                         <input type="checkbox" name="" @if (!empty($signal) && $signal->is_private) checked @endif class="uk-checkbox"
                                onchange="document.getElementById('is_checked_input').value = +this.checked;"> {{ __('Приватный') }}
-                        <input type="hidden" name="is_private" value=@if (!empty($signal)) {{ intval($signal->is_private) }} @endif id="is_checked_input">
+                        <input type="hidden"
+                               name="is_private"
+                               value="{{ empty($signal) ? 0 : intval($signal->is_private) }}"
+                               id="is_checked_input">
                     </label>
                 </div>
                 @if ($errors->has('is_private'))
