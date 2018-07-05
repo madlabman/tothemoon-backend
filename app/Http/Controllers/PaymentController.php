@@ -6,9 +6,9 @@ use App\Events\PaymentConfirmed;
 use App\Payment;
 use Illuminate\Http\Request;
 
-class PaymentsController extends Controller
+class PaymentController extends Controller
 {
-    protected const PER_PAGE = 10;
+    protected const PER_PAGE = 12;
 
     public function index(Request $request)
     {

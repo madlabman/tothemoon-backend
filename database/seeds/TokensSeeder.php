@@ -40,7 +40,7 @@ class TokensSeeder extends Seeder
             'spiridonov'    => 11007.78,
             'kolodyazhniy'  => 2754.63,
             'mikhailov'     => 5522.86,
-            'osipov'        => 18493.24,
+            'osipov'        => 18013.82,
             'bozhkov'       => 8567.84,
         ];
 

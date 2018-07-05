@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Withdraw;
 use Illuminate\Http\Request;
 
-class WithdrawsController extends Controller
+class WithdrawController extends Controller
 {
-    protected const PER_PAGE = 10;
+    protected const PER_PAGE = 12;
 
     public function index(Request $request)
     {

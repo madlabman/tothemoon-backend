@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Signal;
 use Illuminate\Http\Request;
 
-class SignalsController extends Controller
+class SignalController extends Controller
 {
-    protected const PER_PAGE = 10;
+    protected const PER_PAGE = 12;
 
     public function index(Request $request)
     {

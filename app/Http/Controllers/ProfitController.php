@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ProfitController extends Controller
 {
-    protected const PER_PAGE = 10;
+    protected const PER_PAGE = 12;
 
     public function index(Request $request)
     {

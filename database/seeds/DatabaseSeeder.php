@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call(FundsSeeder::class);
         $this->call(LevelConditionsSeeder::class);
         $this->call(UsersSeeder::class);
+        $this->call(TokensSeeder::class);
     }
 }

@@ -8,9 +8,9 @@ use App\LevelCondition;
 use App\User;
 use Illuminate\Http\Request;
 
-class UsersController extends Controller
+class UserController extends Controller
 {
-    protected const PER_PAGE = 10;
+    protected const PER_PAGE = 12;
 
     public function index(Request $request)
     {

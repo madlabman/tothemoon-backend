@@ -21,24 +21,24 @@ Route::get('/home', 'PaymentsController@index')->name('home');
 Route::group(['middleware' => ['auth']], function() {
 
     Route::prefix('signals')->group(function () {
-        Route::get('/', 'SignalsController@index')->name('signals');
-        Route::get('/new', 'SignalsController@new');
-        Route::post('/new', 'SignalsController@create');
-        Route::get('/edit/{id}', 'SignalsController@edit');
-        Route::post('/edit/{id}', 'SignalsController@update');
-        Route::get('/delete/{id}', 'SignalsController@delete');
+        Route::get('/', 'SignalController@index')->name('signals');
+        Route::get('/new', 'SignalController@new');
+        Route::post('/new', 'SignalController@create');
+        Route::get('/edit/{id}', 'SignalController@edit');
+        Route::post('/edit/{id}', 'SignalController@update');
+        Route::get('/delete/{id}', 'SignalController@delete');
     });
 
     Route::prefix('payments')->group(function () {
-        Route::get('/', 'PaymentsController@index')->name('payments');
-        Route::get('/confirm/{id}', 'PaymentsController@confirm');
-        Route::get('/delete/{id}', 'PaymentsController@delete');
+        Route::get('/', 'PaymentController@index')->name('payments');
+        Route::get('/confirm/{id}', 'PaymentController@confirm');
+        Route::get('/delete/{id}', 'PaymentController@delete');
     });
 
     Route::prefix('withdraws')->group(function () {
-        Route::get('/', 'WithdrawsController@index')->name('withdraws');
-        Route::get('/confirm/{id}', 'WithdrawsController@confirm');
-        Route::get('/delete/{id}', 'WithdrawsController@delete');
+        Route::get('/', 'WithdrawController@index')->name('withdraws');
+        Route::get('/confirm/{id}', 'WithdrawController@confirm');
+        Route::get('/delete/{id}', 'WithdrawController@delete');
     });
 
     Route::prefix('profit')->group(function () {
@@ -51,12 +51,12 @@ Route::group(['middleware' => ['auth']], function() {
     });
 
     Route::prefix('users')->group(function () {
-        Route::get('/', 'UsersController@index')->name('users');
+        Route::get('/', 'UserController@index')->name('users');
 //        Route::get('/new', 'UsersController@new');
 //        Route::post('/new', 'UsersController@create');
-        Route::get('/edit/{id}', 'UsersController@edit');
-        Route::post('/edit/{id}', 'UsersController@update');
-        Route::get('/delete/{id}', 'UsersController@delete');
+        Route::get('/edit/{id}', 'UserController@edit');
+        Route::post('/edit/{id}', 'UserController@update');
+        Route::get('/delete/{id}', 'UserController@delete');
     });
 
     Route::prefix('fund')->group(function () {
