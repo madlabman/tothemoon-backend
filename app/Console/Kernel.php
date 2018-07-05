@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('tothemoon:checkBTC')->everyTenMinutes();
         $schedule->command('tothemoon:balance')->everyTenMinutes();
         $schedule->command('tothemoon:profit')->dailyAt('01:00');
+        $schedule->command('tothemoon:account')->monthly();
     }
 
     /**
