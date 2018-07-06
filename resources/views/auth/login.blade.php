@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="uk-container uk-container-center">
-    <h1 class="uk-text-center">{{ __('Войти в панель') }}</h1>
+    <h1 class="uk-text-center">{{ __('Аутентификация') }}</h1>
     <form method="POST" action="{{ route('login') }}" class="uk-width-medium uk-align-center">
         @csrf
         <fieldset class="uk-fieldset">
