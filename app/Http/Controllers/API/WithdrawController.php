@@ -50,7 +50,7 @@ class WithdrawController extends Controller
 
                 // Take amount from balance
                 if ($can_take_from_bonus) {
-                    $user->balance->bonus = bcsub($user->balance->binus, $amount_tkn);
+                    $user->balance->bonus = bcsub($user->balance->bonus, $amount_tkn);
                 } else {
                     $bonus_part = $user->balance->bonus;
                     $body_part = bcsub($amount_tkn * (1 + $commission_percent), $bonus_part, 5);
