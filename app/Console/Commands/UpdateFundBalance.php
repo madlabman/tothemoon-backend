@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Fund;
+use App\FundBalanceHistory;
 use App\Library\BinanceHelper;
 use App\Library\BittrexHelper;
 use App\Library\BlockchainHelper;
@@ -31,6 +32,8 @@ class UpdateFundBalance extends Command
     protected $balance_usd = 0;
 
     protected $balance_btc = 0;
+
+    protected $coins = [];
 
     /**
      * Create a new command instance.
@@ -65,6 +68,11 @@ class UpdateFundBalance extends Command
         }
     }
 
+    /**
+     * Calculate price of coins added manually from admin part.
+     *
+     * @return float|int
+     */
     private function calculate_manual_coins()
     {
         $fund = Fund::where('slug', 'tothemoon')->first();
@@ -73,6 +81,8 @@ class UpdateFundBalance extends Command
             foreach ($fund->coins as $coin) {
                 if ($coin->amount > 0) {
                     $coins_price += $coin->amount * CoinMarketCapHelper::price($coin->symbol);
+                    // Save for history
+                    $this->coins[strtolower($coin->symbol)] = $coin->amount;
                 }
             }
             echo 'Manual added coins value equal to ' . round($coins_price, 2) . '$' . PHP_EOL;
@@ -81,6 +91,9 @@ class UpdateFundBalance extends Command
         return empty($coins_price) ? 0 : $coins_price;
     }
 
+    /**
+     * Fetch an amount of BTC on wallet provided in .env.
+     */
     private function get_btc_wallet_cash()
     {
         $data = BlockchainHelper::get_transactions(config('app.BTC_ADDRESS'));
@@ -89,11 +102,16 @@ class UpdateFundBalance extends Command
             $amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
             $this->balance_btc += $btc_eq;
             $this->balance_usd += $amount;
+            // Save for history
+            $this->coins['btc'] += $btc_eq;
             // debug
             echo 'BTC wallet amount equal to ' . round($amount, 2) . '$' . PHP_EOL;
         }
     }
 
+    /**
+     * Fetch an amount of ETH on wallet provided in .env.
+     */
     private function get_eth_wallet_cash()
     {
         $eth_balance = EtherScanHelper::get_wallet_balance(config('app.ETH_ADDRESS'));
@@ -102,11 +120,18 @@ class UpdateFundBalance extends Command
             $usd_amount = CryptoPrice::convert($btc_amount, 'btc', 'usd');
             $this->balance_btc += $btc_amount;
             $this->balance_usd += $usd_amount;
+            // Save for history
+            $this->coins['eth'] += $eth_balance;
             // debug
             echo 'ETH wallet amount equal to ' . round($usd_amount, 2) . '$' . PHP_EOL;
         }
     }
 
+    /**
+     * Calculate BTC and USD equivalent of coins on Bittrex.
+     *
+     * @return array
+     */
     private function get_bittrex_balance()
     {
         $acc_list = BittrexHelper::get_balances();
@@ -117,16 +142,22 @@ class UpdateFundBalance extends Command
             foreach ($acc_list['result'] as $account) {
                 // Check only positive balanced accounts
                 if ($account['Balance'] > 0) {
-                    if ($account['Currency'] == 'BTC') {
-                        $btc_eq = $account['Balance'];
+                    $currency = $account['Currency'];
+                    $coin_amount = $account['Balance'];
+
+                    if ($currency == 'BTC') {
+                        $btc_eq = $coin_amount;
                     } else {
-                        $btc_eq = BittrexHelper::convert_to_btc($account['Balance'], $account['Currency']);
+                        $btc_eq = BittrexHelper::convert_to_btc($coin_amount, $currency);
                     }
 
                     if (!empty($btc_eq)) {
                         $amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
                         $balance_btc += $btc_eq;
                         $balance_usd += $amount;
+
+                        // Save for history
+                        $this->coins[strtolower($currency)] += $coin_amount;
                     }
                 }
             }
@@ -138,6 +169,11 @@ class UpdateFundBalance extends Command
         ];
     }
 
+    /**
+     * Calculate BTC and USD equivalent of coins on Binance.
+     *
+     * @return array
+     */
     private function get_binance_balance()
     {
         $acc_list = BinanceHelper::get_balances();
@@ -148,16 +184,22 @@ class UpdateFundBalance extends Command
             foreach ($acc_list['balances'] as $account) {
                 // Check only positive balanced accounts
                 if ($account['free'] > 0) {
-                    if ($account['asset'] == 'BTC') {
-                        $btc_eq = $account['free'];
+                    $currency = $account['asset'];
+                    $coin_amount = $account['free'];
+
+                    if ($currency == 'BTC') {
+                        $btc_eq = $coin_amount;
                     } else {
-                        $btc_eq = BinanceHelper::convert_to_btc($account['free'], $account['asset']);
+                        $btc_eq = BinanceHelper::convert_to_btc($coin_amount, $currency);
                     }
 
                     if (!empty($btc_eq)) {
                         $amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
                         $balance_btc += $btc_eq;
                         $balance_usd += $amount;
+
+                        // Save for history
+                        $this->coins[strtolower($currency)] += $coin_amount;
                     }
                 }
             }
@@ -169,18 +211,46 @@ class UpdateFundBalance extends Command
         ];
     }
 
+    /**
+     * Update fund balance and calculate token price.
+     *
+     * @param float $balance_btc
+     * @param float $balance_usd
+     */
     private function update_fund_balance(float $balance_btc, float $balance_usd)
     {
         $fund = Fund::where('slug', 'tothemoon')->first();
         if (!empty($fund) && $fund->token_count > 0) {
             // Calculate manually added amounts
             $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;
+            $this->coins['usd'] = $free_usd;
             $free_usd += $this->calculate_manual_coins();
             // Save balance
             $fund->balance_btc = $balance_btc + CryptoPrice::convert($free_usd, 'usd', 'btc');
             $fund->balance_usd = $balance_usd + $free_usd;
             $fund->token_price = ($balance_usd + $free_usd) / $fund->token_count;
             $fund->save();
+            // Save history
+            $this->save_history();
         }
+    }
+
+    /**
+     * Save coins and prices
+     */
+    private function save_history()
+    {
+        $history = new FundBalanceHistory();
+        $prev_entry = FundBalanceHistory::latest()->first();
+        foreach ($this->coins as $symbol => $amount) {
+            $price = CoinMarketCapHelper::price($symbol);
+            if ($symbol == 'usd') $price = 1;
+
+            $history->$symbol = [
+                $amount,
+                $price,
+            ];
+        }
+        $history->previousEntry()->associate($prev_entry)->save();
     }
 }
