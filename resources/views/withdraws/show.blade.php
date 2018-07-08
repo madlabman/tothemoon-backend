@@ -3,79 +3,68 @@
 @section('content')
     <div class="uk-container">
         <h2 class="uk-text-center">
-            Сигнал
-            @if (!empty($signal))
-                &nbsp;#{{ $signal->id }}
-            @endif
+            Произвести выплату
         </h2>
-        <div class="uk-text-center">
-            @if (!empty($signal))
-                <div class="ml-auto">
-                    <a href="{{ url('/signals/delete/' . $signal->id) }}" class="uk-button uk-button-danger">Удалить</a>
-                </div>
-            @endif
-        </div>
     </div>
     <div class="uk-container uk-padding">
         <form action="" class="uk-form-horizontal uk-width-1-2 uk-align-center" method="post">
             @csrf
             <fieldset class="uk-fieldset">
 
-                <div class="uk-margin">
-                    <label>
-                        <input type="checkbox" name="" @if (!empty($signal) && $signal->is_private) checked @endif class="uk-checkbox"
-                               onchange="document.getElementById('is_checked_input').value = +this.checked;"> {{ __('Приватный') }}
-                        <input type="hidden"
-                               name="is_private"
-                               value="{{ empty($signal) ? 0 : intval($signal->is_private) }}"
-                               id="is_checked_input">
-                    </label>
-                </div>
-                @if ($errors->has('is_private'))
-                    <div>
-                        <span class="uk-alert-danger" uk-alert>
-                            <strong>{{ $errors->first('is_private') }}</strong>
-                        </span>
-                    </div>
-                @endif
+                <!-- Выбрать пользователя -->
+
+                <style>
+                    #user-select option {
+                        padding: 8px;
+                    }
+                </style>
 
                 <div class="uk-margin">
-                    <label class="uk-form-label">Уровень</label>
-                    <div class="uk-form-controls">
-                        <select name="level" id="level" class="uk-select" required>
-                            <option value="1" {{ empty($signal) ? '' : $signal->level == 1 ? 'selected' : '' }}>Красный</option>
-                            <option value="2" {{ empty($signal) ? '' : $signal->level == 2 ? 'selected' : '' }}>Желтый</option>
-                            <option value="4" {{ empty($signal) ? '' : $signal->level == 4 ? 'selected' : '' }}>Зеленый</option>
-                        </select>
-                    </div>
-                    @if ($errors->has('level'))
-                        <div class="uk-alert-danger" uk-alert>
-                            <strong>{{ $errors->first('level') }}</strong>
-                        </div>
-                    @endif
+                    <select id="user-select" class="uk-select" name="user">
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" data-balance="{{ $user->balance }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <div class="uk-margin">
-                    <label class="uk-form-label">Описание</label>
+                <script src="{{ asset('js/jquery.select-filter.js') }}"></script>
+                <script>
+                    $(document).ready(function () {
+                        const $select = $('#user-select');
+                        // Assign symbols with existent values
+                        $select.on('change', function () {
+                            let $option = $(this).find('option:selected');
+                            let balance = +$option.attr('data-balance');
+                            $('input[name="amount"]').attr('max', balance);
+                            $('#max-amount-value').html(balance);
+                            $('#amount-input').show();
+                        });
+                        // Filter
+                        $select.selectFilter({
+                            'filterClass': 'uk-input',
+                            'inputLocation': 'above',
+                            'minimumSelectElementSize': 5,
+                            'width': -1,
+                            'inputPlaceholder': 'Выберите пользователя...',
+                        });
+                    });
+                </script>
+
+                <!-- Получить доступный для вывода баланса -->
+
+                <div class="uk-margin" id="amount-input" style="display: none;">
+
+                    <p>Доступная сумма для снятия: <span id="max-amount-value">0</span> $</p>
+
+                    <label class="uk-form-label">Введите сумму в долларах</label>
                     <div class="uk-form-controls">
-                        <textarea class="uk-textarea" id="info" name="info" rows="10">@if (!empty($signal)){{ $signal->info }}@endif</textarea>
+                        <input type="number" step="any" min="0" name="amount" class="uk-input">
                     </div>
-                    @if ($errors->has('info'))
-                        <div class="uk-alert-danger" uk-alert>
-                            <strong>{{ $errors->first('info') }}</strong>
-                        </div>
-                    @endif
                 </div>
 
             </fieldset>
 
-            <button type="submit" class="uk-button uk-button-primary">
-                @if(!empty($signal))
-                    Обновить
-                @else
-                    Создать
-                @endif
-            </button>
+            <button type="submit" class="uk-button uk-button-primary">Отправить</button>
         </form>
     </div>
 @endsection

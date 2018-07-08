@@ -39,6 +39,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/', 'WithdrawController@index')->name('withdraws');
         Route::get('/confirm/{id}', 'WithdrawController@confirm');
         Route::get('/delete/{id}', 'WithdrawController@delete');
+        Route::get('/new', 'WithdrawController@manual_create');
+        Route::post('/new', 'WithdrawController@manual_proceed');
     });
 
     Route::prefix('profit')->group(function () {

@@ -6,12 +6,15 @@ use App\Exceptions\NotEnoughMoneyToWithdraw;
 use App\Fund;
 use App\Library\CryptoPrice;
 use App\Transaction;
+use App\User;
 use App\Withdraw;
 use Illuminate\Http\Request;
 
 class WithdrawController extends Controller
 {
     protected const PER_PAGE = 12;
+
+    protected const COMMISSION = 0.03;
 
     public function index(Request $request)
     {
@@ -60,6 +63,45 @@ class WithdrawController extends Controller
         return redirect('withdraws');
     }
 
+    public function manual_create()
+    {
+        $fund = Fund::where('slug', 'tothemoon')->first();
+        $users = User::all()->map(function ($user, $key) use ($fund) {
+            $balance = 0;
+            if (!empty($user->balance)) {
+                $balance = bcadd($user->balance->body, $user->balance->bonus, 5) * $fund->token_price * (1 - self::COMMISSION);
+            }
+
+            return (object)[
+                'id' => $user->id,
+                'name' => $user->name,
+                'balance' => $balance,
+            ];
+        });
+
+        return view('withdraws.show')->with([
+            'users' => $users,
+        ]);
+    }
+
+    public function manual_proceed(Request $request)
+    {
+        try {
+            $fund = Fund::where('slug', 'tothemoon')->first();
+            $user = User::findOrFail($request->user);
+            $amount_tkn = $request->amount / $fund->token_price;
+            self::try_to_withdraw($user, $amount_tkn);
+        } catch (NotEnoughMoneyToWithdraw $notEnoughMoneyToWithdraw) {
+            \request()->session()->flash('status', 'Недостаточно средств для вывода!');
+            return back();
+        } catch (\Exception $exception) {
+
+        }
+
+        \request()->session()->flash('status', 'Выплата произведена!');
+        return redirect()->to('/withdraws');
+    }
+
     /**
      * @param $user
      * @param $amount_tkn
@@ -71,7 +113,7 @@ class WithdrawController extends Controller
 
         $balance = $user->balance;
 
-        $commission_percent = 0.03;
+        $commission_percent = self::COMMISSION;
         $can_take_from_bonus = bccomp($balance->bonus, $amount_tkn, 5) > 0;
         $can_take_from_body_and_bonus = bccomp(bcadd($balance->body, $balance->bonus, 5), $amount_tkn * (1 + $commission_percent), 5) > 0;
         $max_amount_usd = bcadd($balance->body, $balance->bonus, 5) * $fund->token_price / (1 + $commission_percent);

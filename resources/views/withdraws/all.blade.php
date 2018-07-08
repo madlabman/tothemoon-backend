@@ -5,6 +5,9 @@
         <h2 class="uk-text-center">
             Выплаты
         </h2>
+        <div class="uk-text-center">
+            <a href="{{ url('/withdraws/new') }}" class="uk-button uk-button-primary">Ручная выплата</a>
+        </div>
     </div>
 
     <div class="uk-container uk-padding">
