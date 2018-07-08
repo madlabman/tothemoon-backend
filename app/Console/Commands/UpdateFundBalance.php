@@ -82,7 +82,7 @@ class UpdateFundBalance extends Command
                 if ($coin->amount > 0) {
                     $coins_price += $coin->amount * CoinMarketCapHelper::price($coin->symbol);
                     // Save for history
-                    $this->coins[strtolower($coin->symbol)] = $coin->amount;
+                    $this->add_to_coin_array($coin->symbol, $coin->amount);
                 }
             }
             echo 'Manual added coins value equal to ' . round($coins_price, 2) . '$' . PHP_EOL;
@@ -103,7 +103,7 @@ class UpdateFundBalance extends Command
             $this->balance_btc += $btc_eq;
             $this->balance_usd += $amount;
             // Save for history
-            $this->coins['btc'] += $btc_eq;
+            $this->add_to_coin_array('btc', $btc_eq);
             // debug
             echo 'BTC wallet amount equal to ' . round($amount, 2) . '$' . PHP_EOL;
         }
@@ -121,7 +121,7 @@ class UpdateFundBalance extends Command
             $this->balance_btc += $btc_amount;
             $this->balance_usd += $usd_amount;
             // Save for history
-            $this->coins['eth'] += $eth_balance;
+            $this->add_to_coin_array('eth', $eth_balance);
             // debug
             echo 'ETH wallet amount equal to ' . round($usd_amount, 2) . '$' . PHP_EOL;
         }
@@ -157,7 +157,7 @@ class UpdateFundBalance extends Command
                         $balance_usd += $amount;
 
                         // Save for history
-                        $this->coins[strtolower($currency)] += $coin_amount;
+                        $this->add_to_coin_array($currency, $coin_amount);
                     }
                 }
             }
@@ -199,7 +199,7 @@ class UpdateFundBalance extends Command
                         $balance_usd += $amount;
 
                         // Save for history
-                        $this->coins[strtolower($currency)] += $coin_amount;
+                        $this->add_to_coin_array($currency, $coin_amount);
                     }
                 }
             }
@@ -223,7 +223,7 @@ class UpdateFundBalance extends Command
         if (!empty($fund) && $fund->token_count > 0) {
             // Calculate manually added amounts
             $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;
-            $this->coins['usd'] = $free_usd;
+            $this->add_to_coin_array('usd', $free_usd);
             $free_usd += $this->calculate_manual_coins();
             // Save balance
             $fund->balance_btc = $balance_btc + CryptoPrice::convert($free_usd, 'usd', 'btc');
@@ -235,22 +235,27 @@ class UpdateFundBalance extends Command
         }
     }
 
+    private function add_to_coin_array($symbol, $amount)
+    {
+        $symbol = strtolower($symbol);
+        if (empty($this->coins[$symbol])) $this->coins[$symbol] = 0;
+        $this->coins[$symbol] += $amount;
+    }
+
     /**
-     * Save coins and prices
+     * Save coins amount.
+     * Method doesn't save coin price because it's publicity available history chart data.
      */
     private function save_history()
     {
         $history = new FundBalanceHistory();
         $prev_entry = FundBalanceHistory::latest()->first();
         foreach ($this->coins as $symbol => $amount) {
-            $price = CoinMarketCapHelper::price($symbol);
-            if ($symbol == 'usd') $price = 1;
-
-            $history->$symbol = [
-                $amount,
-                $price,
-            ];
+            $history->$symbol = $amount;
         }
-        $history->previousEntry()->associate($prev_entry)->save();
+        $history->save();
+        if (!empty($prev_entry)) {
+            $history->previousEntry()->associate($prev_entry)->save();
+        }
     }
 }
