@@ -5,9 +5,9 @@
         <h2 class="uk-text-center">
             Пользователи
         </h2>
-        {{--<div class="uk-text-center">--}}
-            {{--<a href="{{ url('/signals/new') }}" class="uk-button uk-button-primary">Добавить новый сигнал</a>--}}
-        {{--</div>--}}
+        <div class="uk-text-center">
+            <a href="{{ url('/users/new') }}" class="uk-button uk-button-primary">Добавить пользователя</a>
+        </div>
     </div>
 
     <div class="uk-container uk-padding">

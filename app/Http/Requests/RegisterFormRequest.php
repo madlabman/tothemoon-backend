@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 
 class RegisterFormRequest extends BaseAPIRequest
@@ -72,9 +73,15 @@ class RegisterFormRequest extends BaseAPIRequest
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
-        throw new HttpResponseException(response()->json([
-            'status' => 'error',
-            'errors' => $errors
-        ], 200));
+        if ($this->ajax() || $this->wantsJson()) {
+            throw new HttpResponseException(response()->json([
+                'status' => 'error',
+                'errors' => $errors
+            ], 200));
+        } else {
+            throw new HttpResponseException(Redirect::back()
+                ->withInput($this->except($this->dontFlash))
+                ->withErrors($errors));
+        }
     }
 }
