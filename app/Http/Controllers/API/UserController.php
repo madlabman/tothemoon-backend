@@ -58,7 +58,8 @@ class UserController extends Controller
                     ]
                 ]);
             } else {
-                throwException(new \Exception('Balance not found.'));
+//                throw new \Exception('Balance not found.');
+                return response()->json([], 500);
             }
         } catch (\Exception $ex) {
             return response()->json([
@@ -66,8 +67,6 @@ class UserController extends Controller
                 'balance' => null,
             ], 500);
         }
-
-        return response()->json([], 500);
     }
 
     /**
