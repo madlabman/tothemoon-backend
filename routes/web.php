@@ -33,6 +33,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/', 'PaymentController@index')->name('payments');
         Route::get('/confirm/{id}', 'PaymentController@confirm');
         Route::get('/delete/{id}', 'PaymentController@delete');
+        Route::get('/new', 'PaymentController@manual_create');
+        Route::post('/new', 'PaymentController@manual_proceed');
     });
 
     Route::prefix('withdraws')->group(function () {

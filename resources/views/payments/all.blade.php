@@ -3,6 +3,9 @@
 @section('content')
     <div class="uk-container uk-padding">
         <h2 class="uk-text-center">Пополнения баланса</h2>
+        <div class="uk-text-center">
+            <a href="{{ url('/payments/new') }}" class="uk-button uk-button-primary">Ручное пополнение</a>
+        </div>
 
         <div uk-grid>
             @foreach($payments as $payment)
