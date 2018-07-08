@@ -6,10 +6,8 @@ use App\Exceptions\NotEnoughMoneyToWithdraw;
 use App\Fund;
 use App\Library\CryptoPrice;
 use App\Transaction;
-use App\User;
 use App\Withdraw;
 use Illuminate\Http\Request;
-use MongoDB\Driver\Exception\ExecutionTimeoutException;
 
 class WithdrawController extends Controller
 {
@@ -104,8 +102,8 @@ class WithdrawController extends Controller
             $transaction->type = Transaction::WITHDRAW;
             $transaction->token_count = $amount_tkn;
             $transaction->token_price = $fund->token_price;
-            $transaction->user()->associate($user)->save();
             $transaction->save();
+            $transaction->user()->associate($user)->save();
         }
     }
 }
