@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Coin;
 use App\Fund;
+use App\FundBalanceHistory;
 use App\LevelCondition;
 use Illuminate\Http\Request;
 
@@ -76,5 +77,12 @@ class FundController extends Controller
         }
 
         return response()->json(500);
+    }
+
+    public function balance_history()
+    {
+        return view('fund.balance-history')->with([
+            'history' => FundBalanceHistory::latest()->get(),
+        ]);
     }
 }

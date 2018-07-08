@@ -64,6 +64,6 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/', 'FundController@update');
         Route::post('/{fund_id}/manual-usd', 'FundController@manual_usd');
         Route::get('/{fund_id}/delete-coin', 'FundController@delete_coin');
+        Route::get('/balance-history', 'FundController@balance_history')->name('balance_history');
     });
-
 });

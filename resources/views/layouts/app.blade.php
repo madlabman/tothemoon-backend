@@ -46,6 +46,7 @@
                                     <li><a class="nav-link" href="{{ route('payments') }}">Пополнения</a></li>
                                     <li><a class="nav-link" href="{{ route('withdraws') }}">Выплаты</a></li>
                                     <li><a class="nav-link" href="{{ route('profit') }}">Суточный доход</a></li>
+                                    <li><a class="nav-link" href="{{ route('balance_history') }}">История баланса</a></li>
                                 </ul>
                             </div>
                         @endauth
