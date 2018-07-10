@@ -13,8 +13,7 @@
             <thead>
             <tr>
                 <th>Дата</th>
-                <th>Монеты</th>
-                <th width="200px">Количество</th>
+                <th>Состав баланса</th>
             </tr>
             </thead>
             <tbody>
@@ -22,48 +21,21 @@
                 <tr>
                     <td>{{ $entry->created_at }}</td>
                     <td>
-                        <select class="coin-select uk-select" data-target="amount-{{ $entry->id }}">
+                        <table class="uk-table uk-table-small uk-table-striped">
                             @foreach($entry->toArray() as $symbol => $value)
-                                <option value="{{ $value }}">{{ $symbol }}</option>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ $symbol }}</td>
+                                        <td>{{ $value }}</td>
+                                    </tr>
+                                </tbody>
                             @endforeach
-                        </select>
-                    </td>
-                    <td id="amount-{{ $entry->id }}">
-                        Выберите монету
+                        </table>
                     </td>
                 </tr>
             @endforeach
             </tbody>
         </table>
-
-        <style>
-            .coin-select option {
-                padding: 8px;
-            }
-        </style>
-        <script src="{{ asset('js/jquery.select-filter.js') }}"></script>
-        <script>
-            $(document).ready(function () {
-                $('.coin-select').each(function () {
-                    // Assign symbols with existent values
-                    $(this).on('change', function () {
-                        let $symbol = $(this).find('option:selected').val();
-                        if ($symbol.length === 0) return;
-                        $('#' + $(this).attr('data-target')).html($symbol);
-                    });
-                });
-
-
-                // Filter
-                $('.coin-select').selectFilter({
-                    'filterClass': 'uk-input',
-                    'inputLocation': 'above',
-                    'minimumSelectElementSize': 2,
-                    'width': -1,
-                    'inputPlaceholder': 'Введите название монеты...',
-                });
-            });
-        </script>
 
     </div>
 @endsection
