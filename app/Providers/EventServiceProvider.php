@@ -16,6 +16,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\PaymentConfirmed' => [
             'App\Listeners\PaymentConfirmedListener',
         ],
+        'App\Events\SignalCreated' => [
+            'App\Listeners\SignalCreatedListener',
+        ],
     ];
 
     /**

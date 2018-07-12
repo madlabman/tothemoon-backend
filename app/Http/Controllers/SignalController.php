@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SignalCreated;
 use App\Signal;
 use Illuminate\Http\Request;
 
@@ -78,6 +79,7 @@ class SignalController extends Controller
     {
         if ($data = $this->validateSignalRequest($request)) {
             $signal = Signal::create($data);
+            event(new SignalCreated($signal));
             $request->session()->flash('status', 'Сигнал создан!');
             return redirect('/signals/edit/' . $signal->id);
         }
