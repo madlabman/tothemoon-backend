@@ -7,8 +7,6 @@ use App\Fund;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Library\CryptoPrice;
-use App\Repository\MessageRepository;
-use App\Repository\UserRepository;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -45,17 +43,11 @@ class UserController extends Controller
                 $fund = Fund::where('slug', 'tothemoon')->first();
                 if (empty($fund)) throw new \Exception('Fund doesn\'t exist');
 
-                $tkn = auth()->user()->balance->body;
-                $usd = round($tkn * $fund->token_price, 2);
-                $btc = round(CryptoPrice::convert($usd, 'usd', 'btc'), 5);
-                $rub = round(CryptoPrice::convert($btc, 'btc', 'rub'), 2);
-
                 return response()->json([
                     'status'    => 'success',
                     'balance'   => [
-                        'btc'   => $btc,
-                        'usd'   => $usd,
-                        'rub'   => $rub,
+                        'body'  => CryptoPrice::get_base_currencies_from_token(auth()->user()->balance->body),
+                        'bonus' => CryptoPrice::get_base_currencies_from_token(auth()->user()->balance->bonus),
                     ]
                 ]);
             } else {

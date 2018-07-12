@@ -2,6 +2,7 @@
 
 namespace App\Library;
 
+use App\Fund;
 use Cache;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -40,6 +41,25 @@ class CryptoPrice
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Return array of price in btc, usd and rub.
+     *
+     * @param float $token_amount
+     */
+    public static function get_base_currencies_from_token(float $token_amount)
+    {
+        $fund = Fund::where('slug', 'tothemoon')->first();
+        $usd = round($token_amount * $fund->token_price, 2);
+        $btc = round(CryptoPrice::convert($usd, 'usd', 'btc'), 5);
+        $rub = round(CryptoPrice::convert($btc, 'btc', 'rub'), 2);
+
+        return [
+            'btc'   => $btc,
+            'usd'   => $usd,
+            'rub'   => $rub,
+        ];
     }
 
     /**
