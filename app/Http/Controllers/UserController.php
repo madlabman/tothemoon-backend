@@ -128,7 +128,7 @@ class UserController extends Controller
         $user->balance()->save($balance);
 
         // Send email
-        //Mail::to($user)->send(new EmailVerify($user->email_token));
+        Mail::to($user)->send(new EmailVerify($user->email_token));
 
         return redirect()->to('/users/edit/' . $user->id);
     }
