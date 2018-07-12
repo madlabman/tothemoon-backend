@@ -34,6 +34,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/ref_count', 'API\UserController@ref_count');
             Route::post('/update', 'API\UserController@update');
             Route::post('/password', 'API\UserController@updatePassword');
+            Route::post('/add-device', 'API\UserController@add_device');
 
             Route::prefix('chat')->group(function () {
                 Route::get('/all', 'API\ChatController@chat_all');

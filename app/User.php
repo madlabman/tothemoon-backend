@@ -137,6 +137,11 @@ class User extends NeoEloquent implements
             ->get();
     }
 
+    public function devices()
+    {
+        return $this->hasMany(Device::class, 'HAS_DEVICE');
+    }
+
     public function incomingMessages()
     {
         return $this->belongsToMany(Message::class, 'RECEIVED_MESSAGE');

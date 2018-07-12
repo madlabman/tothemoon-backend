@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Device;
 use App\Fund;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePasswordRequest;
@@ -188,6 +189,30 @@ class UserController extends Controller
             }
         } catch (\Exception $ex) {
             return response()->json([], 500);
+        }
+    }
+
+    /**
+     * Save Firebase Cloud Token to database.
+     *
+     * @param Request $request
+     */
+    public function add_device(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $device = Device::updateOrCreate([
+                'token' => $request->token,
+            ]);
+            $user->devices()->save($device);
+
+            return response()->json([
+                'status' => 'success',
+            ]);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'error' => 'Error in storing device token.'
+            ], 500);
         }
     }
 }
