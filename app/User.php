@@ -106,6 +106,16 @@ class User extends NeoEloquent implements
         return $this->belongsTo(User::class, 'HAS_REFERRAL');
     }
 
+    public function team()
+    {
+        return $this->belongsTo(Command::class, 'IN_COMMAND');
+    }
+
+    public function managed_team()
+    {
+        return $this->hasOne(Command::class, 'ADMIN_COMMAND');
+    }
+
     public function referrals()
     {
         return $this->hasMany(User::class, 'HAS_REFERRAL');

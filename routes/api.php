@@ -84,6 +84,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/{slug}', 'API\PageController@index');
         });
 
+        Route::prefix('teams')->group(function () {
+            Route::get('/', 'API\TeamController@index');
+            Route::get('/join/{id}', 'API\TeamController@join');
+        });
+
     });
 
 });
