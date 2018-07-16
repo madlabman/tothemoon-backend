@@ -24,6 +24,10 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+    Route::prefix('fund')->group(function () {
+        Route::get('/profit', 'API\FundController@profit');
+    });
+
     Route::group(['middleware' => ['jwt.auth']], function () {
 
         Route::prefix('user')->group(function () {
@@ -59,11 +63,6 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('profit')->group(function () {
             Route::get('/', 'API\ProfitController@all');
-        });
-
-        Route::prefix('fund')->group(function () {
-            Route::post('create', 'FundController@create');
-            Route::get('find/{slug}', 'FundController@get');
         });
 
         Route::prefix('deposit')->group(function () {
