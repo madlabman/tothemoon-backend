@@ -30,30 +30,26 @@ class UserController extends Controller
         if (self::PER_PAGE < $count) {
             for ($i = 1; $i <= ceil($count / self::PER_PAGE); $i++) {
                 array_push($pages, [
-                    'text'      => $i,
-                    'link'      => url('/users/?page=' . $i),
-                    'active'    => $request->get('page') == $i
+                    'text' => $i,
+                    'link' => url('/users/?page=' . $i),
+                    'active' => $request->get('page') == $i
                 ]);
             }
         }
 
-        $token_in_usd = 0;
-        $fund = Fund::where('slug', 'tothemoon')->first();
-        if (!empty($fund)) $token_in_usd = $fund->token_price;
-
         return view('users.all')->with([
-            'users'     => $users->map(function ($user) use ($token_in_usd) {
+            'users' => $users->map(function ($user) {
                 return (object)[
                     'id' => $user->id,
                     'name' => $user->name,
                     'phone' => $user->phone,
                     'balance' => (object)[
-                        'body'  => $user->balance->body * $token_in_usd,
-                        'bonus' => $user->balance->bonus * $token_in_usd,
+                        'body' => $user->balance->body,
+                        'bonus' => $user->balance->bonus,
                     ],
                 ];
             })->all(),
-            'pages'     => $pages,
+            'pages' => $pages,
         ]);
     }
 
@@ -63,8 +59,8 @@ class UserController extends Controller
         if (empty($user)) return app()->abort(404);
         $levels = LevelCondition::orderBy('min_usd_amount')->orderBy('max_duration')->get();
         return view('users.show')->with([
-            'user'      => $user,
-            'levels'    => $levels,
+            'user' => $user,
+            'levels' => $levels,
         ]);
     }
 
@@ -89,6 +85,19 @@ class UserController extends Controller
 
         return redirect()->back();
     }
+
+    public function update_balance(Request $request)
+    {
+        $user = User::findOrFail($request->user);
+//        dd($request->all());
+        $user->balance->body = (float)$request->body;
+        $user->balance->bonus = (float)$request->bonus;
+        $user->balance->save();
+
+        $request->session()->flash('status', 'Пользователь обновлен!');
+        return redirect()->back();
+    }
+
 
     public function new() {
         return view('users.new');

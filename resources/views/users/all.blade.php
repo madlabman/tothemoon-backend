@@ -11,28 +11,35 @@
     </div>
 
     <div class="uk-container uk-padding">
-        <div uk-grid>
-            @foreach($users as $user)
 
-                <div class="uk-card uk-card-small uk-card-hover uk-light uk-card-secondary uk-card-body uk-width-1-3@m">
-                    <h3 class="uk-card-title uk-text-small">
-                        {{ $user->name }}
-                    </h3>
-                    <p>{{ $user->phone }}</p>
-                    <p>
-                        @if(!empty($user->balance))
-                            Баланс: <em>{{ round($user->balance->body, 2) }} $</em><br>
-                            Бонус: <em>{{ round($user->balance->bonus, 2) }} $</em>
-                        @endif
-                    </p>
-                    <div>
-                        <a href="{{ url('/users/edit/' . $user->id) }}" class="uk-button uk-button-primary uk-button-small">Редактировать</a>
-                        <a href="{{ url('/users/delete/' . $user->id) }}" class="uk-button uk-button-danger uk-button-small">Удалить</a>
-                    </div>
-                </div>
-
-            @endforeach
-        </div>
+                <table class="uk-table uk-table-middle">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Тело</th>
+                            <th>Бонус</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($users as $user)
+                        <tr>
+                            <form action="{{ url()->to('/users/quick-update') }}" method="post">
+                                <td>{{ $user->name }} [<em><small>{{ $user->phone }}</small></em>]</td>
+                                {{ csrf_field() }}
+                                <input type="hidden" value="{{ $user->id }}" name="user">
+                                <td><input type="number" value="{{ $user->balance->body }}" name="body" class="uk-input"></td>
+                                <td><input type="number" value="{{ $user->balance->bonus }}" name="bonus" class="uk-input"></td>
+                                <td>
+                                    <button type="submit" class="uk-button uk-button-primary uk-button-small">Обновить</button>
+                                    <a href="{{ url('/users/edit/' . $user->id) }}" class="uk-button uk-button-primary uk-button-small">Редактировать</a>
+                                    <a href="{{ url('/users/delete/' . $user->id) }}" class="uk-button uk-button-danger uk-button-small">Удалить</a>
+                                </td>
+                            </form>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
 
         @if(!empty($pages))
             <ul class="uk-pagination uk-flex-center uk-padding">

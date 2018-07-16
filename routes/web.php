@@ -70,6 +70,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/edit/{id}', 'UserController@edit');
         Route::post('/edit/{id}', 'UserController@update');
         Route::get('/delete/{id}', 'UserController@delete');
+        Route::post('/quick-update', 'UserController@update_balance');
     });
 
     Route::prefix('fund')->group(function () {
