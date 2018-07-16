@@ -76,6 +76,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/', 'API\NewsController@index');
         });
 
+        Route::prefix('faq')->group(function () {
+            Route::get('/', 'API\FAQController@index');
+        });
+
     });
 
 });
