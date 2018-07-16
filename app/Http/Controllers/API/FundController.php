@@ -9,7 +9,7 @@ class FundController extends Controller
 {
     public function profit()
     {
-        $data = Profit::latest()->get()->map(function ($profit) {
+        $data = Profit::oldest()->get()->map(function ($profit) {
             return [
                 'date' => $profit->created_at->toDateString(),
                 'close' => $profit->usd_change
