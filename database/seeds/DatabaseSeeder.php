@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LevelConditionsSeeder::class);
         $this->call(UsersSeeder::class);
         $this->call(TokensSeeder::class);
+        $this->call(PageSeeder::class);
     }
 }

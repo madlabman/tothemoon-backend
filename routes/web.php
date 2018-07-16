@@ -89,4 +89,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/{fund_id}/delete-coin', 'FundController@delete_coin');
         Route::get('/balance-history', 'FundController@balance_history')->name('balance_history');
     });
+
+    Route::prefix('page')->group(function() {
+        Route::get('/command', 'PageController@command')->name('command');
+        Route::post('/command/update', 'PageController@update_command');
+    });
 });
