@@ -69,7 +69,9 @@ class CommandController extends Controller
         if ($data = $this->validatePostRequest($request)) {
             $command = Command::find($id);
             if (!empty($command)) {
+                $admin = User::findOrFail($request->user);
                 $command->update($data);
+                $command->admin()->associate($admin)->save();
             }
         }
         $request->session()->flash('status', 'Команда обновлена!');
