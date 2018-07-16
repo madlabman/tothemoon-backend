@@ -19,7 +19,7 @@ class TeamController extends Controller
                         'name'      => $team->name,
                         'leader'    => $team->admin->name,
                         'is_leader' => $team->admin->id === auth()->user()->id,
-                        'is_member' => $team->id === auth()->user()->team->id,
+                        'is_member' => !empty(auth()->user()->team) ? $team->id === auth()->user()->team->id : false,
                     ];
                 }),
             ]);
