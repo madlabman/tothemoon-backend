@@ -48,6 +48,7 @@
                                     <li><a class="nav-link" href="{{ route('profit') }}">Суточный доход</a></li>
                                     <li><a class="nav-link" href="{{ route('balance_history') }}">История баланса</a></li>
                                     <li><a class="nav-link" href="{{ route('news') }}">Новости</a></li>
+                                    <li><a class="nav-link" href="{{ route('faq') }}">FAQ</a></li>
                                 </ul>
                             </div>
                         @endauth

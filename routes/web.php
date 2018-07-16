@@ -38,6 +38,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/delete/{id}', 'NewsController@delete');
     });
 
+    Route::prefix('faq')->group(function () {
+        Route::get('/', 'FAQController@index')->name('faq');
+        Route::get('/new', 'FAQController@new');
+        Route::post('/new', 'FAQController@create');
+        Route::get('/edit/{id}', 'FAQController@edit');
+        Route::post('/edit/{id}', 'FAQController@update');
+        Route::get('/delete/{id}', 'FAQController@delete');
+    });
+
     Route::prefix('payments')->group(function () {
         Route::get('/', 'PaymentController@index')->name('payments');
         Route::get('/confirm/{id}', 'PaymentController@confirm');
