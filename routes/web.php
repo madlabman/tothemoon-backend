@@ -29,6 +29,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/delete/{id}', 'SignalController@delete');
     });
 
+    Route::prefix('news')->group(function () {
+        Route::get('/', 'NewsController@index')->name('news');
+        Route::get('/new', 'NewsController@new');
+        Route::post('/new', 'NewsController@create');
+        Route::get('/edit/{id}', 'NewsController@edit');
+        Route::post('/edit/{id}', 'NewsController@update');
+        Route::get('/delete/{id}', 'NewsController@delete');
+    });
+
     Route::prefix('payments')->group(function () {
         Route::get('/', 'PaymentController@index')->name('payments');
         Route::get('/confirm/{id}', 'PaymentController@confirm');
