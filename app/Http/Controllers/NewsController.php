@@ -15,7 +15,7 @@ class NewsController extends Controller
         if (!empty($page = $request->get('page'))) {
             $skip = ($page - 1) * self::PER_PAGE;
         }
-        $payments = NewsPost::skip($skip)->take(self::PER_PAGE)->latest()->get();
+        $news = NewsPost::skip($skip)->take(self::PER_PAGE)->latest()->get();
         $count = NewsPost::count();
         $pages = [];
         if (self::PER_PAGE < $count) {
@@ -28,7 +28,7 @@ class NewsController extends Controller
             }
         }
         return view('news.all')->with([
-            'news'     => $payments,
+            'news'     => $news,
             'pages'    => $pages,
         ]);
     }
