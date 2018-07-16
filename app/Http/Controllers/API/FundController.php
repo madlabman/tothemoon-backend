@@ -20,4 +20,18 @@ class FundController extends Controller
             'data' => $data
         ]);
     }
+
+    public function token_price()
+    {
+        $data = Profit::oldest()->get()->map(function ($profit) {
+            return [
+                'date' => $profit->created_at->toDateString(),
+                'close' => $profit->token_price
+            ];
+        });
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ]);
+    }
 }

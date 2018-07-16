@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('fund')->group(function () {
         Route::get('/profit', 'API\FundController@profit');
+        Route::get('/token-price', 'API\FundController@token_price');
     });
 
     Route::group(['middleware' => ['jwt.auth']], function () {
