@@ -80,6 +80,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/', 'API\FAQController@index');
         });
 
+        Route::prefix('page')->group(function () {
+            Route::get('/{slug}', 'API\PageController@index');
+        });
+
     });
 
 });
