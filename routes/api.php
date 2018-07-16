@@ -72,6 +72,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/{id}', 'API\DepositController@read');
         });
 
+        Route::prefix('news')->group(function () {
+            Route::get('/', 'API\NewsController@index');
+        });
+
     });
 
 });

@@ -31,7 +31,6 @@ class NewsPost extends NeoEloquent
      * @var array
      */
     protected $hidden = [
-        'created_at',
         'updated_at',
     ];
 }
