@@ -42,6 +42,7 @@
                                 <ul class="uk-nav uk-navbar-dropdown-nav">
                                     <li><a class="nav-link" href="{{ route('fund') }}">Фонд</a></li>
                                     <li><a class="nav-link" href="{{ route('users') }}">Пользователи</a></li>
+                                    <li><a class="nav-link" href="{{ route('commands') }}">Команды</a></li>
                                     <li><a class="nav-link" href="{{ route('signals') }}">Сигналы</a></li>
                                     <li><a class="nav-link" href="{{ route('payments') }}">Пополнения</a></li>
                                     <li><a class="nav-link" href="{{ route('withdraws') }}">Выплаты</a></li>

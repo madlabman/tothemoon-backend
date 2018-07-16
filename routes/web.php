@@ -82,6 +82,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/quick-update', 'UserController@update_balance');
     });
 
+    Route::prefix('commands')->group(function () {
+        Route::get('/', 'CommandController@index')->name('commands');
+        Route::get('/new', 'CommandController@new');
+        Route::post('/new', 'CommandController@create');
+        Route::get('/edit/{id}', 'CommandController@edit');
+        Route::post('/edit/{id}', 'CommandController@update');
+        Route::get('/delete/{id}', 'CommandController@delete');
+    });
+
     Route::prefix('fund')->group(function () {
         Route::get('/', 'FundController@index')->name('fund');
         Route::post('/', 'FundController@update');
