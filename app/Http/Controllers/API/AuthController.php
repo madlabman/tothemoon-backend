@@ -101,9 +101,6 @@ class AuthController extends Controller
             // Save user
             $user->save();
 
-            // Send email
-            Mail::to($user)->send(new EmailVerify($user->email_token));
-
             // Check promo
             if (!empty($promo = $request->post('promo'))) {
                 $promo_owner = User::where('promo_code', $promo)->first();
@@ -114,6 +111,9 @@ class AuthController extends Controller
 
             $balance = new Balance();
             $user->balance()->save($balance);
+
+            // Send email
+            Mail::to($user)->send(new EmailVerify($user->email_token));
         } catch (\Exception $ex) {
             return response()->json([
                 'status'    => 'error',
