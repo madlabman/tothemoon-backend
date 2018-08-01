@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('payment')->group(function () {
             Route::post('/create', 'API\PaymentController@create');
+            Route::get('/history', 'API\PaymentController@history');
         });
 
         Route::prefix('withdraw')->group(function () {

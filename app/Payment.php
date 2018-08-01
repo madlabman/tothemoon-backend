@@ -31,8 +31,9 @@ class Payment extends NeoEloquent
      * @var array
      */
     protected $attributes = [
+        'amount'        => 0.0,
         'is_confirmed'  => false,
-        'tx_hash'       => null,
+        'tx_hash'       => false,   // null value ignored by Neo4j
     ];
 
     /**

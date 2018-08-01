@@ -31,4 +31,28 @@ class PaymentController extends Controller
 
         return response()->json([], 500);
     }
+
+    public function history()
+    {
+        try {
+            if (!(empty($user = auth()->user()))) {
+                $payments = $user->payments()->limit(15)->get();
+                return response()->json([
+                    'status' => 'success',
+                    'payments' => $payments->map(function ($item) {
+                        return [
+                            'is_confirmed' => $item->is_confirmed,
+                            'created_at' => $item->created_at->addHours(4)->format('d-m-Y H:i:s'),
+                            'amount' => $item->amount,
+                            'link' => $item->tx_hash ? "https://www.blockchain.com/ru/btc/tx/$item->tx_hash"  : false,
+                        ];
+                    })
+                ]);
+            }
+        } catch (\Exception $ex) {
+            return response()->json([], 500);
+        }
+
+        return response()->json([], 500);
+    }
 }
