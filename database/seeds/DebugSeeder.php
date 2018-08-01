@@ -11,8 +11,14 @@ class DebugSeeder extends Seeder
      */
     public function run()
     {
+//        foreach (\App\User::all() as $user) {
+//            $user->calculateLevel();
+//        }
         foreach (\App\User::all() as $user) {
-            $user->calculateLevel();
+            if (empty($user->balance)) {
+                $balance = new \App\Balance();
+                $user->balance()->save($balance);
+            }
         }
     }
 }
