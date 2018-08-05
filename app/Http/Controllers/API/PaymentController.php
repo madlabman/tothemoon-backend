@@ -11,7 +11,7 @@ class PaymentController extends Controller
     public function create(PaymentCreateRequest $request)
     {
         try {
-            if (!(empty($user = auth()->user()))) {„
+            if (!(empty($user = auth()->user()))) {
                 $payment = Payment::create([
                     'amount' => $request->post('amount'),
                     'wallet' => $request->post('wallet'),
