@@ -9,12 +9,17 @@ use App\Transaction;
 use App\User;
 use App\Withdraw;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class WithdrawController extends Controller
 {
     protected const PER_PAGE = 12;
 
     protected const COMMISSION = 0.03;
+
+    protected const MONTHS_WITH_FEE = 6;
+
+    protected const FEE_PERCENT = 0.25;
 
     public function index(Request $request)
     {
@@ -112,11 +117,20 @@ class WithdrawController extends Controller
         $fund = Fund::where('slug', 'tothemoon')->first();
 
         $balance = $user->balance;
+        $body = $balance->body;
+        $bonus = $balance->bonus;
+
+        // Check investment date
+        $invested_at = $user->invested_at;
+        $six_month_ago = Carbon::now()->addMonths( - self::MONTHS_WITH_FEE );
+        if ($six_month_ago < $invested_at) {    // Invested less than start fee less time
+            $body -= $body * self::FEE_PERCENT;
+        }
 
         $commission_percent = self::COMMISSION;
-        $can_take_from_bonus = bccomp($balance->bonus, $amount_tkn, 5) > 0;
-        $can_take_from_body_and_bonus = bccomp(bcadd($balance->body, $balance->bonus, 5), $amount_tkn * (1 + $commission_percent), 5) > 0;
-        $max_amount_usd = bcadd($balance->body, $balance->bonus, 5) * $fund->token_price / (1 + $commission_percent);
+        $can_take_from_bonus = bccomp($bonus, $amount_tkn, 5) > 0;
+        $can_take_from_body_and_bonus = bccomp(bcadd($body, $bonus, 5), $amount_tkn * (1 + $commission_percent), 5) > 0;
+        $max_amount_usd = bcadd($body, $bonus, 5) * $fund->token_price / (1 + $commission_percent);
         $max_amount_btc = CryptoPrice::convert($max_amount_usd, 'usd', 'btc');
 
         if (!$can_take_from_bonus && !$can_take_from_body_and_bonus) {
@@ -128,15 +142,15 @@ class WithdrawController extends Controller
 
         // Take amount from balance
         if ($can_take_from_bonus) {
-            $user->balance->bonus = bcsub($user->balance->bonus, $amount_tkn);
+            $user->balance->bonus = bcsub($bonus, $amount_tkn);
         } else {
-            $bonus_part = $user->balance->bonus;
+            $bonus_part = $bonus;
             $body_part = bcsub($amount_tkn * (1 + $commission_percent), $bonus_part, 5);
 
             // TODO: commission to fund
 
             $user->balance->bonus = 0;
-            $user->balance->body -= $body_part;
+            $user->balance->body = $body - $body_part;
             $user->balance->save();
 
             // Log transaction
