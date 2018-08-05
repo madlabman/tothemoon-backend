@@ -10,6 +10,7 @@ use App\Library\BlockchainHelper;
 use App\Library\CoinMarketCapHelper;
 use App\Library\CryptoPrice;
 use App\Library\EtherScanHelper;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -221,6 +222,10 @@ class UpdateFundBalance extends Command
     {
         $fund = Fund::where('slug', 'tothemoon')->first();
         if (!empty($fund) && $fund->token_count > 0) {
+            // Calculate token count
+            $token_count = User::all()->reduce(function ($carry, $user) use ($fund) {
+                return $carry + $user->balance->body / $fund->token_price;
+            });
             // Calculate manually added amounts
             $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;
             $this->add_to_coin_array('usd', $free_usd);
@@ -228,7 +233,12 @@ class UpdateFundBalance extends Command
             // Save balance
             $fund->balance_btc = $balance_btc + CryptoPrice::convert($free_usd, 'usd', 'btc');
             $fund->balance_usd = $balance_usd + $free_usd;
-            $fund->token_price = ($balance_usd + $free_usd) / $fund->token_count;
+            // Subtract reserve amount
+            $total_usd_amount = $balance_usd + $free_usd;
+            $total_usd_amount -= $fund->reserve_usd;
+            // Update token count and price
+            $fund->token_count = $token_count;
+            $fund->token_price = $total_usd_amount / $fund->token_count;
             $fund->save();
             // Save history
             $this->save_history();

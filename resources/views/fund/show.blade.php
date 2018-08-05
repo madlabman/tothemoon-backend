@@ -56,6 +56,14 @@
                     @endif
                 </div>
 
+                <div class="uk-margin">
+                    <label class="uk-form-label">Резерв USD</label>
+                    <div class="uk-form-controls">
+                        <input type="text" disabled="" value="@if (!empty($fund)){{ $fund->reserve_usd }}@endif"
+                               name="reserve_usd" id="reserve_usd" class="uk-input">
+                    </div>
+                </div>
+
                 <div id="coins">
                     @foreach($fund->coins->sortByDesc('amount') as $coin)
                         <div class="uk-margin" id="coin-{{ $coin->symbol }}">

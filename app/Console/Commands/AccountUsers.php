@@ -85,6 +85,11 @@ class AccountUsers extends Command
         if ($current_price <= $last_price) return;                          // HALT. Profit less or equal to zero.
         $profit = $user->balance->body * ($current_price - $last_price);
 
+        // Send part of profit to the reserve
+        $reserve_amount = $profit / 2;
+        $profit -= $reserve_amount;
+        $this->fund->reserve_usd += $reserve_amount;
+
         // Calculate user and fund profit
         $invest_level = LevelCondition::find($user->invest_level);
         if (empty($invest_level)) return;                                   // HALT. Undefined investment level.
