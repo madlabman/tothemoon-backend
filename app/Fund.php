@@ -35,6 +35,9 @@ class Fund extends NeoEloquent
         'token_price'        => 0,
         'manual_balance_usd' => 0,
         'reserve_usd'        => 0,
+        'capital_market'     => 0,  // Value of tokens on markets in USD
+        'capital_blockchain' => 0,  // Value of tokens on blockchain in USD
+        'capital_etherscan'  => 0,  // Value of tokens on etherscan in USD
     ];
 
     /**

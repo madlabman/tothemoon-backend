@@ -37,6 +37,11 @@ class UpdateFundBalance extends Command
     protected $coins = [];
 
     /**
+     * @var Fund
+     */
+    protected $fund;
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -44,6 +49,8 @@ class UpdateFundBalance extends Command
     public function __construct()
     {
         parent::__construct();
+        // Init fund
+        $this->fund = Fund::where('slug', 'tothemoon')->first();
     }
 
     /**
@@ -59,6 +66,9 @@ class UpdateFundBalance extends Command
 
         $this->balance_usd += $binance_balance['usd'] > 0 ? $binance_balance['usd'] : 0;
         $this->balance_btc += $binance_balance['btc'] > 0 ? $binance_balance['btc'] : 0;
+
+        // Statistic
+        $this->fund->capital_market = $this->balance_usd;
 
         $this->get_btc_wallet_cash();
         $this->get_eth_wallet_cash();
@@ -76,10 +86,9 @@ class UpdateFundBalance extends Command
      */
     private function calculate_manual_coins()
     {
-        $fund = Fund::where('slug', 'tothemoon')->first();
-        if (!empty($fund)) {
+        if (!empty($this->fund)) {
             $coins_price = 0;
-            foreach ($fund->coins as $coin) {
+            foreach ($this->fund->coins as $coin) {
                 if ($coin->amount > 0) {
                     $coins_price += $coin->amount * CoinMarketCapHelper::price($coin->symbol);
                     // Save for history
@@ -100,13 +109,14 @@ class UpdateFundBalance extends Command
         $data = BlockchainHelper::get_transactions(config('app.BTC_ADDRESS'));
         if (!empty($data) && !empty($data['final_balance'])) {
             $btc_eq = $data['final_balance'] / 100000000;
-            $amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
+            $usd_amount = CryptoPrice::convert($btc_eq, 'btc', 'usd');
             $this->balance_btc += $btc_eq;
-            $this->balance_usd += $amount;
+            $this->balance_usd += $usd_amount;
             // Save for history
             $this->add_to_coin_array('btc', $btc_eq);
+            $this->fund->capital_blockchain = $usd_amount;
             // debug
-            echo 'BTC wallet amount equal to ' . round($amount, 2) . '$' . PHP_EOL;
+            echo 'BTC wallet amount equal to ' . round($usd_amount, 2) . '$' . PHP_EOL;
         }
     }
 
@@ -123,6 +133,7 @@ class UpdateFundBalance extends Command
             $this->balance_usd += $usd_amount;
             // Save for history
             $this->add_to_coin_array('eth', $eth_balance);
+            $this->fund->capital_etherscan = $usd_amount;
             // debug
             echo 'ETH wallet amount equal to ' . round($usd_amount, 2) . '$' . PHP_EOL;
         }
@@ -220,26 +231,25 @@ class UpdateFundBalance extends Command
      */
     private function update_fund_balance(float $balance_btc, float $balance_usd)
     {
-        $fund = Fund::where('slug', 'tothemoon')->first();
-        if (!empty($fund) && $fund->token_count > 0) {
+        if (!empty($this->fund) && $this->fund->token_count > 0) {
             // Calculate token count
-            $token_count = User::all()->reduce(function ($carry, $user) use ($fund) {
+            $token_count = User::all()->reduce(function ($carry, $user) {
                 return $carry + $user->balance->body;
             });
             // Calculate manually added amounts
-            $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;
+            $free_usd  = !empty($this->fund->manual_balance_usd) ? $this->fund->manual_balance_usd : 0;
             $this->add_to_coin_array('usd', $free_usd);
             $free_usd += $this->calculate_manual_coins();
             // Save balance
-            $fund->balance_btc = $balance_btc + CryptoPrice::convert($free_usd, 'usd', 'btc');
-            $fund->balance_usd = $balance_usd + $free_usd;
+            $this->fund->balance_btc = $balance_btc + CryptoPrice::convert($free_usd, 'usd', 'btc');
+            $this->fund->balance_usd = $balance_usd + $free_usd;
             // Subtract reserve amount
             $total_usd_amount = $balance_usd + $free_usd;
-            $total_usd_amount -= $fund->reserve_usd;
+            $total_usd_amount -= $this->fund->reserve_usd;
             // Update token count and price
-            $fund->token_count = $token_count;
-            $fund->token_price = $total_usd_amount / $fund->token_count;
-            $fund->save();
+            $this->fund->token_count = $token_count;
+            $this->fund->token_price = $total_usd_amount / $this->fund->token_count;
+            $this->fund->save();
             // Save history
             $this->save_history();
         }
