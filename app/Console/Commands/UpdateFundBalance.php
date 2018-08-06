@@ -224,7 +224,7 @@ class UpdateFundBalance extends Command
         if (!empty($fund) && $fund->token_count > 0) {
             // Calculate token count
             $token_count = User::all()->reduce(function ($carry, $user) use ($fund) {
-                return $carry + $user->balance->body / $fund->token_price;
+                return $carry + $user->balance->body;
             });
             // Calculate manually added amounts
             $free_usd  = !empty($fund->manual_balance_usd) ? $fund->manual_balance_usd : 0;

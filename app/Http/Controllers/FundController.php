@@ -82,7 +82,7 @@ class FundController extends Controller
     public function balance_history()
     {
         return view('fund.balance-history')->with([
-            'history' => FundBalanceHistory::latest()->get(),
+            'history' => FundBalanceHistory::latest()->limit(30)->get(),
         ]);
     }
 }
