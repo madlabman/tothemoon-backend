@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Fund;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentCreateRequest;
+use App\Library\CryptoPrice;
 use App\Payment;
+use App\Transaction;
 
 class PaymentController extends Controller
 {
@@ -21,6 +24,17 @@ class PaymentController extends Controller
                 $user->payments()->save($payment);
                 $user->save();
 
+                // Add transaction
+                $fund = Fund::where('slug', 'tothemoon')->first();
+                $usd_eq = CryptoPrice::convert($request->post('amount'), 'btc', 'usd');
+                $transaction = Transaction::create([
+                    'type'        => Transaction::PAYMENT,
+                    'token_count' => $usd_eq / $fund->token_price,
+                    'token_price' => $fund->token_price
+                ]);
+                $transaction->user()->associate($user)->save();
+
+                // Return success
                 return response()->json([
                     'status'  => 'success',
                     'address' => config('app.BTC_ADDRESS')
