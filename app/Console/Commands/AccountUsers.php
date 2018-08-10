@@ -6,6 +6,7 @@ use App\Fund;
 use App\LevelCondition;
 use App\Profit;
 use App\Repository\UserRepository;
+use App\Transaction;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -77,13 +78,13 @@ class AccountUsers extends Command
         $price_data = Profit::where('created_at', '<', $last_account_date)
             ->orderBy('created_at', 'desc')
             ->first();
-        if (empty($price_data)) return;                                     // HALT. Cannot retrieve last price.
+        if (empty($price_data)) return;                                                 // HALT. Cannot retrieve last price.
 
-        $last_price = $price_data->token_price;
-        $current_price = $this->fund->token_price;
+        $last_token_price = $price_data->token_price;
+        $current_token_price = $this->fund->token_price;
 
-        if ($current_price <= $last_price) return;                          // HALT. Profit less or equal to zero.
-        $profit = $user->balance->body * ($current_price - $last_price);
+        if ($current_token_price <= $last_token_price) return;                          // HALT. Profit less or equal to zero.
+        $profit = $user->balance->body * ($current_token_price - $last_token_price);
 
         // Send part of profit to the reserve
         $reserve_amount = $profit / 2;
@@ -92,26 +93,35 @@ class AccountUsers extends Command
 
         // Calculate user and fund profit
         $invest_level = LevelCondition::find($user->invest_level);
-        if (empty($invest_level)) return;                                   // HALT. Undefined investment level.
+        if (empty($invest_level)) return;                                               // HALT. Undefined investment level.
 
         $user_profit = $profit * $invest_level->investor_pie;
         $fund_profit = $profit - $user_profit;
 
+        $user_profit_token = $user_profit / $current_token_price;
+
         // Update user balance
         $user->balance->body += $user->balance->bonus;
-        $user->balance->bonus = $user_profit / $current_price;
+        $user->balance->bonus = $user_profit_token;
         $user->balance->save();
+        // Log transaction
+        $account_transaction = Transaction::create([
+            'type'        => Transaction::ACCOUNT,
+            'token_count' => $user_profit_token,
+            'token_price' => $current_token_price
+        ]);
+        $account_transaction->user()->associate($user)->save();
         // Save account date
         $user->last_accounted_at = Carbon::now();
         $user->save();
 
         // Fund profit to referral chain
         $referral_pie = [
-            1   => 0.10,
-            2   => 0.05,
-            3   => 0.03,
-            4   => 0.02,
-            5   => 0.01,
+            1 => 0.10,
+            2 => 0.05,
+            3 => 0.03,
+            4 => 0.02,
+            5 => 0.01,
         ];
         // Getting referrals chain 1 -> 5
         $chain = $this->userRepository->referral_chain($user->login);
@@ -123,6 +133,13 @@ class AccountUsers extends Command
                 $referral_profit = $fund_profit * $referral_pie[$row['c']];
                 $referral->balance->bonus += $referral_profit;
                 $referral->balance->save();
+                // Log transaction
+                $account_transaction = Transaction::create([
+                    'type'        => Transaction::REFERRAL,
+                    'token_count' => $referral_profit,
+                    'token_price' => $current_token_price
+                ]);
+                $account_transaction->user()->associate($referral)->save();
                 // Decrease fund profit
                 $fund_profit -= $referral_profit;
             }
@@ -138,9 +155,17 @@ class AccountUsers extends Command
         ];
         foreach ($owner_login_array as $owner) {
             $owner_user = User::where('login', $owner)->first();
+            $owner_profit = $fund_profit / count($owner_login_array);
             if (!empty($owner_user)) {
-                $owner_user->balance->body += $fund_profit / count($owner_login_array);
+                $owner_user->balance->body += $owner_profit;
                 $owner_user->balance->save();
+                // Log transaction
+                $dividend_transaction = Transaction::create([
+                    'type'        => Transaction::DIVIDEND,
+                    'token_count' => $owner_profit,
+                    'token_price' => $current_token_price
+                ]);
+                $dividend_transaction->user()->associate($owner_user)->save();
             }
         }
     }

@@ -9,8 +9,11 @@ class Transaction extends NeoEloquent
     /*
      * Transaction type
      */
-    public const PAYMENT = 1;
-    public const WITHDRAW = 2;
+    public const PAYMENT = 'PAYMENT';
+    public const WITHDRAW = 'WITHDRAW';
+    public const ACCOUNT = 'ACCOUNT';
+    public const REFERRAL = 'REFERRAL';
+    public const DIVIDEND = 'DIVIDEND';
 
     protected $label = 'Transaction';
 
@@ -19,7 +22,11 @@ class Transaction extends NeoEloquent
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'type',
+        'token_count',
+        'token_price',
+    ];
 
     /**
      * Default values for fields.
