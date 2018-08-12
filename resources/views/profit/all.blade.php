@@ -15,7 +15,7 @@
             @foreach($profits as $profit)
                 <div class="uk-card uk-card-small uk-card-hover uk-light uk-card-secondary uk-card-body uk-width-1-3@m">
                     <h3 class="uk-card-title uk-text-small">
-                        {{ $profit->created_at->formatLocalized('%d / %m / %Y') }}
+                        {{ $profit->created_at->timezone(config('app.TZ'))->formatLocalized('%d / %m / %Y') }}
                     </h3>
                     <p>
                         <span class="uk-text-large">{{ round($profit->token_change * 100, 2) }}%</span><br>

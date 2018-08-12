@@ -5,7 +5,7 @@
         <h2 class="uk-text-center">
             Доход
             @if (!empty($profit))
-                от {{ $profit->created_at->formatLocalized('%d / %m / %Y') }}
+                от {{ $profit->created_at->timezone(config('app.TZ'))->formatLocalized('%d / %m / %Y') }}
             @endif
         </h2>
         @if (!empty($profit))

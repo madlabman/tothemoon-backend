@@ -11,13 +11,13 @@ class FundController extends Controller
     {
         $data = Profit::oldest()->get()->map(function ($profit) {
             return [
-                'date' => $profit->created_at->toDateString(),
+                'date'  => $profit->created_at->timezone(config('app.TZ'))->toDateString(),
                 'close' => $profit->usd_change
             ];
         });
         return response()->json([
             'status' => 'success',
-            'data' => $data
+            'data'   => $data
         ]);
     }
 
@@ -25,13 +25,13 @@ class FundController extends Controller
     {
         $data = Profit::oldest()->get()->map(function ($profit) {
             return [
-                'date' => $profit->created_at->toDateString(),
+                'date'  => $profit->created_at->timezone(config('app.TZ'))->toDateString(),
                 'close' => $profit->token_price
             ];
         });
         return response()->json([
             'status' => 'success',
-            'data' => $data
+            'data'   => $data
         ]);
     }
 }

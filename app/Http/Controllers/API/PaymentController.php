@@ -57,7 +57,7 @@ class PaymentController extends Controller
                     'payments' => $payments->map(function ($item) {
                         return [
                             'is_confirmed' => $item->is_confirmed,
-                            'created_at'   => $item->created_at->addHours(4)->format('d-m-Y H:i:s'),
+                            'created_at'   => $item->created_at->timezone(config('app.TZ'))->format('d-m-Y H:i:s'),
                             'amount'       => $item->amount,
                             'link'         => $item->tx_hash ? "https://www.blockchain.com/ru/btc/tx/$item->tx_hash" : false,
                         ];

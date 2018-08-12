@@ -31,7 +31,7 @@
                             @php($style .= '#adadad;')
                         @endswitch
                         <span style="display: inline-block; border-radius: 50%; width: 10px; height: 10px; margin-right: 4px; {{ $style }}"></span>
-                        {{ $signal->created_at->diffForHumans() }}
+                        {{ $signal->created_at->timezone(config('app.TZ')) }}
                     </h3>
                     <p>{{ $signal->info }}</p>
                     <div>

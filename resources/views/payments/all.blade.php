@@ -13,7 +13,7 @@
                 <div class="uk-card uk-card-small uk-card-hover uk-light uk-card-secondary uk-card-body uk-width-1-2@m">
                     <h3 class="uk-card-title">{{ $payment->amount }} BTC</h3>
                     <p>
-                        Создан: <em class="uk-text-small">{{ $payment->created_at }}</em><br>
+                        Создан: <em class="uk-text-small">{{ $payment->created_at->timezone(config('app.TZ')) }}</em><br>
                         Кошелек: <em>{{ $payment->wallet }}</em>
                     </p>
                     <div>

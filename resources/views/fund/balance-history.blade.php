@@ -19,7 +19,7 @@
             <tbody>
             @foreach($history as $entry)
                 <tr>
-                    <td>{{ $entry->created_at }}</td>
+                    <td>{{ $entry->created_at->timezone(config('app.TZ')) }}</td>
                     <td>
                         <table class="uk-table uk-table-small uk-table-striped">
                             @foreach($entry->toArray() as $symbol => $value)
