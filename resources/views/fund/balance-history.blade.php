@@ -6,6 +6,25 @@
             История изменения баланса
         </h2>
     </div>
+
+    <div class="uk-container uk-padding">
+        <form method="get" class="uk-text-center">
+            <input type="text" name="date_from" value="{{ $date_from }}" title="Date from" class="uk-input uk-form-width-medium" placeholder="Записи новее даты...">
+            &nbsp;-&nbsp;
+            <input type="text" name="date_to" value="{{ $date_to }}" title="Date to" class="uk-input uk-form-width-medium" placeholder="Записее старее даты...">
+            &nbsp;
+            <button class="uk-button uk-button-danger">Показать</button>
+
+            <script>
+                $('input[name=date_from], input[name=date_to]').flatpickr({
+                    enableTime: true,
+                    time_24hr: true,
+                    locale: "ru"
+                });
+            </script>
+        </form>
+    </div>
+
     <div class="uk-container uk-padding">
 
         <table class="uk-table uk-table-small uk-table-middle uk-table-divider">

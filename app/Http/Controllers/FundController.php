@@ -6,6 +6,7 @@ use App\Coin;
 use App\Fund;
 use App\FundBalanceHistory;
 use App\LevelCondition;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class FundController extends Controller
@@ -23,21 +24,21 @@ class FundController extends Controller
         $fund = Fund::where('slug', '=', 'tothemoon')->first();
         if (empty($fund)) app()->abort(404);
         return view('fund.show')->with([
-            'fund'      => $fund,
+            'fund' => $fund,
         ]);
     }
 
     public function validateFundRequest(Request $request)
     {
         return $request->validate([
-            'token_count'           => 'required|numeric',
-            'token_price'           => 'required|numeric',
-            'manual_balance_usd'    => 'required|numeric',
-            'coin'                  => 'required|array',
+            'token_count'        => 'required|numeric',
+            'token_price'        => 'required|numeric',
+            'manual_balance_usd' => 'required|numeric',
+            'coin'               => 'required|array',
         ], [
-            'required'  => 'Поле обязательно',
-            'numeric'   => 'Неверный формат',
-            'array'     => null,
+            'required' => 'Поле обязательно',
+            'numeric'  => 'Неверный формат',
+            'array'    => null,
         ]);
     }
 
@@ -53,8 +54,8 @@ class FundController extends Controller
                         $db_coin->update(compact('amount'));
                     } else {
                         $db_coin = Coin::create([
-                            'symbol'    => $sym,
-                            'amount'    => $amount,
+                            'symbol' => $sym,
+                            'amount' => $amount,
                         ]);
                         $fund->coins()->save($db_coin);
                     }
@@ -79,10 +80,26 @@ class FundController extends Controller
         return response()->json(500);
     }
 
-    public function balance_history()
+    public function balance_history(Request $request)
     {
+        $items = FundBalanceHistory::latest();
+
+        if (!empty($request->get('date_from'))) {
+            $items = $items->where(
+                'created_at', '>=', Carbon::parse($request->get('date_from'), config('app.TZ'))
+            );
+        }
+
+        if (!empty($request->get('date_to'))) {
+            $items = $items->where(
+                'created_at', '<=', Carbon::parse($request->get('date_to'), config('app.TZ'))
+            );
+        }
+
         return view('fund.balance-history')->with([
-            'history' => FundBalanceHistory::latest()->limit(30)->get(),
+            'history'   => $items->limit(30)->get(),
+            'date_from' => $request->get('date_from'),
+            'date_to'   => $request->get('date_to')
         ]);
     }
 }
