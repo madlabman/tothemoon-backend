@@ -2,42 +2,40 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\PaymentConfirmed;
 use App\Fund;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BitApsCallbackRequest;
 use App\Http\Requests\PaymentCreateRequest;
+use App\Library\BitApsHelper;
 use App\Library\CryptoPrice;
 use App\Payment;
 use App\Transaction;
+use App\User;
+use Illuminate\Support\Facades\Event;
 
 class PaymentController extends Controller
 {
-    public function create(PaymentCreateRequest $request)
+    public function create()
     {
         try {
             if (!(empty($user = auth()->user()))) {
-                $payment = Payment::create([
-                    'amount' => $request->post('amount'),
-                    'wallet' => $request->post('wallet'),
-                    'type'   => Payment::BTC,
-                ]);
-
-                $user->payments()->save($payment);
-                $user->save();
-
-                // Add transaction
-                $fund = Fund::where('slug', 'tothemoon')->first();
-                $usd_eq = CryptoPrice::convert($request->post('amount'), 'btc', 'usd');
-                $transaction = Transaction::create([
-                    'type'        => Transaction::PAYMENT,
-                    'token_count' => $usd_eq / $fund->token_price,
-                    'token_price' => $fund->token_price
-                ]);
-                $transaction->user()->associate($user)->save();
+                // Check payment address
+                $payment_address = $user->payment_address;
+                if (empty($payment_address)) {
+                    // Create new payment address
+                    $bitApsResponse = BitApsHelper::create_payment_address($user);
+                    if (!$bitApsResponse->isValid()) throw new \Exception('Invalid BitApsResponse');
+                    $payment_address = $bitApsResponse->getAddress();
+                    $user->payment_address = $payment_address;
+                    $user->payment_code = $bitApsResponse->getPaymentCode();
+                    $user->save();
+                }
 
                 // Return success
                 return response()->json([
                     'status'  => 'success',
-                    'address' => config('app.BTC_ADDRESS')
+                    'address' => $payment_address
                 ]);
             }
         } catch (\Exception $ex) {
@@ -45,6 +43,46 @@ class PaymentController extends Controller
         }
 
         return response()->json([], 500);
+    }
+
+    public function receive(BitApsCallbackRequest $request, $user_id, Fund $fund)
+    {
+        $user = User::findOrFail($user_id);
+        // It seems I should to compare payment code with stored in database
+        if ($request->code === $user->payment_code) {
+            $payment = Payment::create([
+                'amount'    => $request->amount / 100000000,    // Convert from Satoshi,
+                'wallet'    => $request->address,
+                'type'      => Payment::BTC,
+                'tx_hash'   => $request->tx_hash,
+                'confirmed' => true
+            ]);
+
+            $user->payments()->save($payment);
+            $user->save();
+
+            // Add transaction
+            $usd_eq = CryptoPrice::convert($request->post('amount'), 'btc', 'usd');
+            $token_count = $usd_eq / $fund->token_price;
+            $transaction = Transaction::create([
+                'type'        => Transaction::PAYMENT,
+                'token_count' => $token_count,
+                'token_price' => $fund->token_price,
+            ]);
+            $transaction->user()->associate($user)->save();
+
+            // Add tokens to the user
+            $user->balance->body += $token_count;
+            $user->balance->save();
+            $fund->token_count += $token_count;
+            $fund->save();
+
+            // Fire event
+            Event::fire(new PaymentConfirmed($payment));
+
+            // Return response to the BitAps
+            echo $request->invoice;
+        }
     }
 
     public function history()

@@ -38,6 +38,8 @@ class User extends NeoEloquent implements
         'signal_access',
         'invested_at',
         'last_accounted_at',
+        'payment_address',
+        'payment_code'
     ];
 
     /**
@@ -54,6 +56,7 @@ class User extends NeoEloquent implements
         'invest_level',
         'updated_at',
         'created_at',
+        'payment_code'
     ];
 
     /**

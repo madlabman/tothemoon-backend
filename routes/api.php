@@ -29,6 +29,16 @@ Route::prefix('v1')->group(function () {
         Route::get('/token-price', 'API\FundController@token_price');
     });
 
+    Route::prefix('payment')->group(function () {
+        Route::group(['middleware' => ['jwt.auth']], function () {
+            Route::get('/create', 'API\PaymentController@create');
+            Route::get('/history', 'API\PaymentController@history');
+        });
+        Route::post('/receive/{user_id}', 'API\PaymentController@receive');
+    });
+
+
+
     Route::group(['middleware' => ['jwt.auth']], function () {
 
         Route::prefix('user')->group(function () {
@@ -48,11 +58,6 @@ Route::prefix('v1')->group(function () {
                 Route::post('/post', 'API\ChatController@compose');
                 Route::get('/unread_count', 'API\ChatController@unread_count');
             });
-        });
-
-        Route::prefix('payment')->group(function () {
-            Route::post('/create', 'API\PaymentController@create');
-            Route::get('/history', 'API\PaymentController@history');
         });
 
         Route::prefix('withdraw')->group(function () {

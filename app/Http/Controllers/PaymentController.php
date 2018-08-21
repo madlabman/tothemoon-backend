@@ -69,11 +69,10 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function manual_proceed(Request $request)
+    public function manual_proceed(Request $request, Fund $fund)
     {
         try {
             $user = User::findOrFail($request->user);
-            $fund = Fund::where('slug', 'tothemoon')->first();
             $amount = (float)$request->amount;
             if ($amount > 0) {
                 $user->balance->body += $amount;
