@@ -34,7 +34,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/create', 'API\PaymentController@create');
             Route::get('/history', 'API\PaymentController@history');
         });
-        Route::post('/receive/{user_id}', 'API\PaymentController@receive');
+        Route::post('/receive/{user_id}', 'API\PaymentController@receive')
+            ->middleware(\Spatie\HttpLogger\Middlewares\HttpLogger::class);
     });
 
 
