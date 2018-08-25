@@ -18,7 +18,7 @@ class BitApsHelper
      */
     private static function build_callback_uri(User $user): string
     {
-        return urlencode(config('app.url') . '/api/v1/payment/receive/' . $user->ID);
+        return urlencode(config('app.api_url') . '/api/v1/payment/receive/' . $user->ID);
     }
 
     /**
