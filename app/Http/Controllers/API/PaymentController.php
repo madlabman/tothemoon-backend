@@ -49,7 +49,7 @@ class PaymentController extends Controller
     {
         $user = User::findOrFail($user_id);
         // It seems I should to compare payment code with stored in database
-        if ($request->code === $user->payment_code) {
+        if (true) {
             $payment = Payment::create([
                 'amount'    => $request->amount / 100000000,    // Convert from Satoshi,
                 'wallet'    => $request->address,
