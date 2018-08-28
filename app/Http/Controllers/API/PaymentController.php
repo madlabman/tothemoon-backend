@@ -72,15 +72,6 @@ class PaymentController extends Controller
             ]);
             $transaction->user()->associate($user)->save();
 
-            // Add tokens to the user
-            $user->balance->body += $token_count;
-            $user->balance->save();
-            $fund->token_count += $token_count;
-            $fund->save();
-
-            // Fire event
-            Event::fire(new PaymentConfirmed($payment));
-
             // Return response to the BitAps
             echo $request->invoice;
         }

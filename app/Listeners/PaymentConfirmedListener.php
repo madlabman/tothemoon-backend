@@ -20,16 +20,17 @@ class PaymentConfirmedListener
      */
     public function __construct()
     {
-        $this->fund = Fund::where('slug', '=', 'tothemoon')->first();
+        //
     }
 
     /**
      * Handle the event.
      *
-     * @param  PaymentConfirmed  $event
+     * @param PaymentConfirmed $event
+     * @param Fund $fund
      * @return void
      */
-    public function handle(PaymentConfirmed $event)
+    public function handle(PaymentConfirmed $event, Fund $fund)
     {
         $event->payment->is_confirmed = true;
         $first_investment = false;
@@ -42,11 +43,11 @@ class PaymentConfirmedListener
             // TODO: reinvest
         }
 
-        if (!empty($this->fund) && $this->fund->token_price > 0) {
+        if (!empty($fund) && $fund->token_price > 0) {
             // Getting values
             $btc_amount = $event->payment->amount;
             $usd_amount = CryptoPrice::convert($btc_amount, 'btc', 'usd');
-            $tkn_amount = $usd_amount / $this->fund->token_price;
+            $tkn_amount = $usd_amount / $fund->token_price;
             // Update user balance
             if ($first_investment) {
                 $event->payment->user->balance->primary_usd = $usd_amount;
@@ -55,8 +56,8 @@ class PaymentConfirmedListener
             $event->payment->user->balance->save();
             $event->payment->save();
             // Update fund tokens count
-            $this->fund->token_count += $tkn_amount;
-            $this->fund->save();
+            $fund->token_count += $tkn_amount;
+            $fund->save();
         }
     }
 }

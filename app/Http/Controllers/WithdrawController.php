@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Exceptions\NotEnoughMoneyToWithdraw;
 use App\Fund;
 use App\Library\CryptoPrice;
+use App\Mail\WithdrawConfirmed;
 use App\Transaction;
 use App\User;
 use App\Withdraw;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class WithdrawController extends Controller
 {
@@ -63,6 +66,15 @@ class WithdrawController extends Controller
             $withdraw->is_confirmed = true;
             $withdraw->save();
             \request()->session()->flash('status', 'Выплата подтверждена!');
+            // Send email
+            try {
+                Mail::to(config('app.admin_email'))
+                    ->cc(config('app.admin_email_alt'))
+                    ->send(new WithdrawConfirmed($withdraw));
+            } catch (\Exception $exception) {
+                Log::critical($exception->getMessage());
+                Log::critical($exception->getTraceAsString());
+            }
         }
 
         return redirect('withdraws');
@@ -100,7 +112,8 @@ class WithdrawController extends Controller
             \request()->session()->flash('status', 'Недостаточно средств для вывода!');
             return back();
         } catch (\Exception $exception) {
-
+            Log::critical($exception->getMessage());
+            Log::critical($exception->getTraceAsString());
         }
 
         \request()->session()->flash('status', 'Выплата произведена!');

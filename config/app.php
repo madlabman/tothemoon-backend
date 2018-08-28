@@ -225,4 +225,7 @@ return [
 
     'TZ' => env('TIMEZONE', 'Europe/Moscow'),
 
+    'admin_email' => env('ADMIN_EMAIL', null),
+    'admin_email_alt' => env('ADMIN_EMAIL_ALT', null),
+
 ];
