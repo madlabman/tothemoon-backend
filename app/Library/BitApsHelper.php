@@ -27,9 +27,9 @@ class BitApsHelper
      */
     private static function build_create_payment_address_uri(User $user): string
     {
-        die (self::$API_BASE . '/api/create/payment/'
+        return self::$API_BASE . '/api/create/payment/'
             . urlencode(config('app.BTC_ADDRESS')) . '/'
-            . self::build_callback_uri($user));
+            . self::build_callback_uri($user);
     }
 
     /**
