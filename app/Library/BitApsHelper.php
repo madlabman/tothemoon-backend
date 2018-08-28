@@ -18,7 +18,7 @@ class BitApsHelper
      */
     private static function build_callback_uri(User $user): string
     {
-        return urlencode(config('app.api_url') . '/api/v1/payment/receive/' . $user->ID);
+        return urlencode(config('app.api_url') . '/api/v1/payment/receive/' . $user->uuid);
     }
 
     /**
@@ -27,9 +27,9 @@ class BitApsHelper
      */
     private static function build_create_payment_address_uri(User $user): string
     {
-        return self::$API_BASE . '/api/create/payment/'
+        die (self::$API_BASE . '/api/create/payment/'
             . urlencode(config('app.BTC_ADDRESS')) . '/'
-            . self::build_callback_uri($user);
+            . self::build_callback_uri($user));
     }
 
     /**
@@ -39,6 +39,8 @@ class BitApsHelper
     public static function create_payment_address(User $user): BitApsResponse
     {
         $bitapsResponse = new BitApsResponse();
+        // Skip if user has not uuid
+        if (empty($user) || empty($user->uuid)) return $bitapsResponse;
 
         try {
             $client = new \GuzzleHttp\Client();

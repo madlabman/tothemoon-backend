@@ -6,7 +6,6 @@ use App\Events\PaymentConfirmed;
 use App\Fund;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BitApsCallbackRequest;
-use App\Http\Requests\PaymentCreateRequest;
 use App\Library\BitApsHelper;
 use App\Library\CryptoPrice;
 use App\Payment;
@@ -45,9 +44,11 @@ class PaymentController extends Controller
         return response()->json([], 500);
     }
 
-    public function receive(BitApsCallbackRequest $request, $user_id, Fund $fund)
+    public function receive(BitApsCallbackRequest $request, $user_uuid, Fund $fund)
     {
-        $user = User::findOrFail($user_id);
+        $user = User::where('uuid', $user_uuid)->first();
+        if (empty($user)) return;
+
         // It seems I should to compare payment code with stored in database
         if (true) {
             $payment = Payment::create([

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Ramsey\Uuid\Uuid;
 
 class DebugSeeder extends Seeder
 {
@@ -11,6 +12,9 @@ class DebugSeeder extends Seeder
      */
     public function run()
     {
+        \App\User::find(0)->update([
+            'uuid' => Uuid::uuid1()
+        ]);
 //        foreach (\App\User::all() as $user) {
 //            $user->calculateLevel();
 //        }
