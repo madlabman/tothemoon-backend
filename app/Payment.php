@@ -23,6 +23,8 @@ class Payment extends NeoEloquent
         'amount',
         'wallet',
         'type',
+        'is_confirmed',
+        'tx_hash',
     ];
 
     /**

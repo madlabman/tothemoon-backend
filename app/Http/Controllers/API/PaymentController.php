@@ -11,7 +11,6 @@ use App\Library\CryptoPrice;
 use App\Payment;
 use App\Transaction;
 use App\User;
-use Illuminate\Support\Facades\Event;
 
 class PaymentController extends Controller
 {
@@ -49,14 +48,20 @@ class PaymentController extends Controller
         $user = User::where('uuid', $user_uuid)->first();
         if (empty($user)) return;
 
-        // It seems I should to compare payment code with stored in database
-        if (true) {
+        if (
+            $request->code === $user->payment_code // It seems I should to compare payment code with stored in database
+            && $request->payout_tx_hash !== 'None' // Check if payout_tx_hash presented (payment transferred to fund wallet)
+        ) {
+            // Calculate amount of payment after tax
+            $payment_amount = $request->amount;
+            $payment_amount -= $request->payout_miner_fee !== 'None' ? $request->payout_miner_fee : 0;
+
             $payment = Payment::create([
-                'amount'    => $request->amount / 100000000,    // Convert from Satoshi,
-                'wallet'    => $request->address,
-                'type'      => Payment::BTC,
-                'tx_hash'   => $request->tx_hash,
-                'confirmed' => true
+                'amount'       => $payment_amount / 100000000,    // Convert from Satoshi,
+                'wallet'       => $request->address,
+                'type'         => Payment::BTC,
+                'tx_hash'      => $request->tx_hash,
+                'is_confirmed' => false
             ]);
 
             $user->payments()->save($payment);
@@ -72,9 +77,12 @@ class PaymentController extends Controller
             ]);
             $transaction->user()->associate($user)->save();
 
-            // Return response to the BitAps
-            echo $request->invoice;
+            // Fire confirmation event
+            \Event::fire(new PaymentConfirmed($payment));
         }
+
+        // Return response to the BitAps
+        echo $request->invoice;
     }
 
     public function history()

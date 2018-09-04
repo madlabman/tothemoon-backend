@@ -5,9 +5,10 @@ namespace App\Listeners;
 use App\Events\PaymentConfirmed;
 use App\Fund;
 use App\Library\CryptoPrice;
+use App\Mail\PaymentConfirmed as PaymentConfirmedMail;
 use Carbon\Carbon;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentConfirmedListener
 {
@@ -16,11 +17,11 @@ class PaymentConfirmedListener
     /**
      * Create the event listener.
      *
-     * @return void
+     * @param Fund $fund
      */
-    public function __construct()
+    public function __construct(Fund $fund)
     {
-        //
+        $this->fund = $fund;
     }
 
     /**
@@ -30,7 +31,7 @@ class PaymentConfirmedListener
      * @param Fund $fund
      * @return void
      */
-    public function handle(PaymentConfirmed $event, Fund $fund)
+    public function handle(PaymentConfirmed $event)
     {
         $event->payment->is_confirmed = true;
         $first_investment = false;
@@ -43,11 +44,11 @@ class PaymentConfirmedListener
             // TODO: reinvest
         }
 
-        if (!empty($fund) && $fund->token_price > 0) {
+        if (!empty($this->fund) && $this->fund->token_price > 0) {
             // Getting values
             $btc_amount = $event->payment->amount;
             $usd_amount = CryptoPrice::convert($btc_amount, 'btc', 'usd');
-            $tkn_amount = $usd_amount / $fund->token_price;
+            $tkn_amount = $usd_amount / $this->fund->token_price;
             // Update user balance
             if ($first_investment) {
                 $event->payment->user->balance->primary_usd = $usd_amount;
@@ -56,8 +57,18 @@ class PaymentConfirmedListener
             $event->payment->user->balance->save();
             $event->payment->save();
             // Update fund tokens count
-            $fund->token_count += $tkn_amount;
-            $fund->save();
+            $this->fund->token_count += $tkn_amount;
+            $this->fund->save();
+        }
+
+        // Send email
+        try {
+            Mail::to(config('app.admin_email'))
+                ->cc(config('app.admin_email_alt'))
+                ->send(new PaymentConfirmedMail($event->payment));
+        } catch (\Exception $exception) {
+            Log::critical($exception->getMessage());
+            Log::critical($exception->getTraceAsString());
         }
     }
 }

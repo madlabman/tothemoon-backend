@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Events\PaymentConfirmed;
-use App\Mail\PaymentConfirmed as PaymentConfirmedMail;
 use App\Fund;
 use App\Payment;
 use App\Transaction;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -57,15 +54,6 @@ class PaymentController extends Controller
         if (!empty($payment)) {
             \Event::fire(new PaymentConfirmed($payment));
             \request()->session()->flash('status', 'Пополнение подтверждено!');
-            // Send email
-            try {
-                Mail::to(config('app.admin_email'))
-                    ->cc(config('app.admin_email_alt'))
-                    ->send(new PaymentConfirmedMail($payment));
-            } catch (\Exception $exception) {
-                Log::critical($exception->getMessage());
-                Log::critical($exception->getTraceAsString());
-            }
         }
 
         return redirect()->back();
