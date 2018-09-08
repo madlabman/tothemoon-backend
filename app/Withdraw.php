@@ -47,4 +47,12 @@ class Withdraw extends NeoEloquent
     {
         return $this->belongsTo(User::class, 'WITHDRAW');
     }
+
+    /**
+     * @return \Vinelab\NeoEloquent\Eloquent\Relations\HasOne
+     */
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class, 'RELATED_TRANSACTION');
+    }
 }

@@ -23,13 +23,14 @@ class WithdrawController extends Controller
                 $amount_usd = CryptoPrice::convert($amount_btc, 'btc', 'usd');
                 $amount_tkn = $amount_usd / $fund->token_price;
 
-                BaseController::try_to_withdraw($user, $amount_tkn);
+                $transaction = BaseController::try_to_withdraw($user, $amount_tkn);
 
                 // Save withdraw
                 $withdraw = Withdraw::create([
                     'amount'    => $request->post('amount'),
                     'wallet'    => $request->post('wallet'),
                 ]);
+                $withdraw->transaction()->save($transaction);
                 $user->withdraws()->save($withdraw);
                 $user->save();
 

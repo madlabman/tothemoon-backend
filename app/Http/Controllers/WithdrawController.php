@@ -51,9 +51,12 @@ class WithdrawController extends Controller
     public function delete($id)
     {
         $withdraw = Withdraw::find($id);
-        if (!empty($withdraw)) {
+        try {
+            self::cancel_withdraw($withdraw);
             $withdraw->delete();
-            \request()->session()->flash('status', 'Выплата удалена!');
+            \request()->session()->flash('status', 'Выплата удалена, средства возвращены!');
+        } catch (\Exception $exception) {
+            \request()->session()->flash('status', 'Произошла ошибка, обратитесь к администратору!');
         }
 
         return redirect('withdraws');
@@ -123,21 +126,27 @@ class WithdrawController extends Controller
     /**
      * @param $user
      * @param $amount_tkn
+     * @return Transaction
      * @throws NotEnoughMoneyToWithdraw
      */
     public static function try_to_withdraw($user, $amount_tkn)
     {
-        $fund = Fund::where('slug', 'tothemoon')->first();
+        $fund = resolve(Fund::class);
 
         $balance = $user->balance;
         $body = $balance->body;
         $bonus = $balance->bonus;
 
+        $earlier_withdraw_fee = 0.0;
+        $fund_commission = 0.0;
+        $took_from_body = 0.0;
+
         // Check investment date
         $invested_at = $user->invested_at;
         $six_month_ago = Carbon::now()->addMonths( - self::MONTHS_WITH_FEE );
         if ($six_month_ago < $invested_at) {    // Invested less than start fee less time
-            $body -= $body * self::FEE_PERCENT;
+            $earlier_withdraw_fee = $body * self::FEE_PERCENT;
+            $body -= $earlier_withdraw_fee;
         }
 
         $commission_percent = self::COMMISSION;
@@ -155,24 +164,60 @@ class WithdrawController extends Controller
 
         // Take amount from balance
         if ($can_take_from_bonus) {
+            $took_from_bonus = $amount_tkn;
             $user->balance->bonus = bcsub($bonus, $amount_tkn);
+            $user->balance->save();
         } else {
-            $bonus_part = $bonus;
-            $body_part = bcsub($amount_tkn * (1 + $commission_percent), $bonus_part, 5);
+            $took_from_bonus = $bonus_part = $bonus;
+            $took_from_body = $body_part = bcsub($amount_tkn * (1 + $commission_percent), $bonus_part, 5);
+            $fund_commission = $amount_tkn * $commission_percent;
 
             // TODO: commission to fund
 
             $user->balance->bonus = 0;
             $user->balance->body = $body - $body_part;
             $user->balance->save();
+        }
 
-            // Log transaction
-            $transaction = new Transaction();
-            $transaction->type = Transaction::WITHDRAW;
-            $transaction->token_count = $amount_tkn;
-            $transaction->token_price = $fund->token_price;
-            $transaction->save();
-            $transaction->user()->associate($user)->save();
+        // Log transaction
+        $transaction = new Transaction();
+        $transaction->type = Transaction::WITHDRAW;
+        $transaction->token_count = $amount_tkn;
+        $transaction->token_price = $fund->token_price;
+        // Magic fields specific to this kind of transaction
+        $transaction->fund_commission_percent = $commission_percent;
+        $transaction->fund_commission = $fund_commission;
+        $transaction->earlier_withdraw_fee = $earlier_withdraw_fee;
+        $transaction->took_from_bonus = (float)$took_from_bonus;
+        $transaction->took_from_body = (float)$took_from_body;
+        // Store to database
+        $transaction->save();
+        $transaction->user()->associate($user)->save();
+
+        return $transaction;
+    }
+
+    /**
+     * Return tokens to user
+     *
+     * @param Withdraw $withdraw
+     */
+    public static function cancel_withdraw(Withdraw $withdraw)
+    {
+        if (
+            !empty($withdraw->amount)
+            && !empty($withdraw->transaction)
+        ) {
+            // Return tokens
+            $withdraw->user->balance->body += $withdraw->transaction->took_from_body;
+            $withdraw->user->balance->body += $withdraw->transaction->earlier_withdraw_fee;
+            $withdraw->user->balance->bonus += $withdraw->transaction->took_from_bonus;
+            $withdraw->transaction->returned_at = Carbon::now();
+            // Save
+            $withdraw->user->balance->save();
+            $withdraw->transaction->save();
+            $withdraw->save();
         }
     }
+
 }

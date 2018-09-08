@@ -18,7 +18,8 @@
                 <h3 class="uk-card-title">{{ $withdraw->amount }} BTC</h3>
                 <p>
                     На адрес: <em>{{ $withdraw->wallet }}</em><br>
-                    Пользователь: <em><small>{{ $withdraw->user->phone }}</small></em>
+                    Пользователь: <em><small>{{ $withdraw->user->phone }}</small></em><br>
+                    Email: <em><small>{{ $withdraw->user->email }}</small></em>
                 </p>
                 <div>
                     @if($withdraw->is_confirmed == false)
